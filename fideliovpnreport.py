@@ -1,12 +1,14 @@
+#!/usr/bin/python
+
 # logcoroutine.py
 #
 # using co-routines to define consumers for the Apache log data
 # http://www.dabeaz.com/generators/logcoroutine.py
 
-from jinja2 import Template
+from lib.jinja2 import Template
 
-from helpers import apache_log, field_map, consumer
-from broadcast import *
+from lib.helpers import apache_log, field_map, consumer
+from lib.broadcast import *
 import settings
 
 stats = {
@@ -59,7 +61,16 @@ def find_404():
         add_entry(r, stats)
 
 
-lines = open(settings.logfile,"r").readlines()
+def read_in_lines(fh = None):
+    """read a file line by line"""
+    while True:
+        line = fh.readline()
+        if not line:
+            break
+        yield line
+    
+
+lines = read_in_lines(open(settings.logfile,"r"))
 log   = apache_log(lines)
 
 broadcast(log, [find_404()])
@@ -74,5 +85,5 @@ def compose_email(data=None):
         return t.render(data)
 
 
-#print compose_email({"stats": stats})
-print stats
+print compose_email({"stats": stats})
+#print stats
