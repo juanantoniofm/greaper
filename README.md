@@ -22,3 +22,10 @@ It has to send an email reporting:
 
 - jinja2
 - 
+
+
+# Defects
+
+- the code in the stats builder method should be cleaner and splitted
+- we are not really using gens to open the file
+
