@@ -16,3 +16,9 @@ It has to send an email reporting:
 
 	- most common 500 errors
 	- most common 400 errors
+
+
+## Dependencies
+
+- jinja2
+- 

@@ -10,7 +10,9 @@ def field_map(dictseq, name, func):
 
 
 logpats  = r'(\S+) (\S+) (\S+) \[(.*?)\] ' \
-           r'"(\S+) (\S+) (\S+)" (\S+) (\S+)'
+           r'"(\S+) (\S+) (\S+)" (\S+) (\S+) (\S+) (\S* ?\S* ?\S*)'
+           #r'"(\S+) (\S+) (\S+)" (\S+) (\S+) "(\S+)" "(\S* ?\S* ?\S*)"' # carefull, not compatible with other logs
+           #r'"(\S+) (\S+) (\S+)" (\S+) (\S+) (\S+) (\S+)'
 
 logpat   = re.compile(logpats)
 
@@ -21,7 +23,7 @@ def apache_log(lines):
     tuples = (g.groups() for g in groups if g)
     
     colnames = ('host','referrer','user','datetime',
-            'method', 'request','proto','status','bytes')
+            'method', 'request','proto','status','bytes','crap','useragent')
 
     log      = (dict(zip(colnames,t)) for t in tuples)
     log      = field_map(log,"status",int)
