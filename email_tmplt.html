@@ -5,15 +5,30 @@
 	
 	<p>This is the relevant information from {{ date }} apache logs in {{ machine }}. For each URL it displays the count of each error logged</p>
 	<h2>Date of this run:  {{ date }}</h2>
+
 	<table class="confluenceTable">
+	<h2>Old Fashioned Report</h2>
 		<tbody>
 			{%for httpcode,datastats in stats.iteritems() %}
-			<tr style="color:red;background-color:black">
+			<tr style="color:#18aad7;background-color:#f5f5f5">
 				<th> Code </th>
 				<th> {{httpcode}} </th>
 				<th colspan="1"  >{{ datastats["count"]}} hits</th>
 			</tr>
-			<tr><td colspan="3">URI</td></tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	<h2>Detailed Report</h2>
+	<table class="confluenceTable">
+		<tbody>
+			{%for httpcode,datastats in stats.iteritems() %}
+			<tr style="color:#18aad7;background-color:#f5f5f5">
+				<th> Code </th>
+				<th> {{httpcode}} </th>
+				<th colspan="1"  >{{ datastats["count"]}} hits</th>
+			</tr>
+			<tr style="color:#18aad7;background-color:#f5f5f5"><td colspan="3">URI</td></tr>
 				{% for uri,hits in datastats["URI"].iteritems() %}
 				<tr>
 					<td></td>
@@ -21,7 +36,9 @@
 					<td>{{hits}} hits</td>
 				</tr>
 				{% endfor %}
-				
+							
+
+				<tr style="color:#18aad7;background-color:#f5f5f5"><td colspan="3">User Agents</td></tr>
 				{% for uagent,hits in datastats["useragents"].iteritems() %}
 				<tr>
 					<td></td>
