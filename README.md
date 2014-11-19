@@ -25,3 +25,8 @@ In fact, as-is is ready to handle any other log from apache (with our current co
 	- the addresses to send the email to
 
 
+## Proposed use cases:
+
+### specify fields in the command line
+
+greap.py --fields host,request
