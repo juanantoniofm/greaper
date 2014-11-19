@@ -5,6 +5,8 @@
 # using co-routines to define consumers for the Apache log data
 # http://www.dabeaz.com/generators/logcoroutine.py
 
+import argparse
+
 from lib.helpers import apache_log, field_map, consumer, read_in_lines
 from myfilters import add_entry
 from lib.broadcast import *
@@ -30,10 +32,16 @@ def neilfilter():
         interesting = ["/integration-opera/services",
                       "/ws/fidelio"]
         if r['status'] != 200:
-            print r
+            if args["verbose"]:
+                print r
 
 lines = read_in_lines(open(settings.logfile,"r"))
 log   = apache_log(lines)
 
 broadcast(log, [neilfilter()])
 
+
+
+command_parser = argparse.ArgumentParser(description="get some cool stats from apache logs")
+command_parser.add_argument("-v","--verbose", help="enable debug output", required=False)
+args = vars(command_parser.parse_args()) 
