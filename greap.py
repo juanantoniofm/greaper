@@ -14,7 +14,7 @@ import settings
 
 
 command_parser = argparse.ArgumentParser(description="get some cool stats from apache logs")
-command_parser.add_argument("-v","--verbose", help="enable debug output", required=False)
+command_parser.add_argument("-v","--verbose", action=store_true, help="enable debug output", required=False, default=False)
 args = vars(command_parser.parse_args()) 
 
 
