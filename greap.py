@@ -12,6 +12,13 @@ from myfilters import add_entry
 from lib.broadcast import *
 import settings
 
+
+command_parser = argparse.ArgumentParser(description="get some cool stats from apache logs")
+command_parser.add_argument("-v","--verbose", help="enable debug output", required=False)
+args = vars(command_parser.parse_args()) 
+
+
+
 stats = {
         "200" : { "count" : 0},
         }
@@ -41,7 +48,3 @@ log   = apache_log(lines)
 broadcast(log, [neilfilter()])
 
 
-
-command_parser = argparse.ArgumentParser(description="get some cool stats from apache logs")
-command_parser.add_argument("-v","--verbose", help="enable debug output", required=False)
-args = vars(command_parser.parse_args()) 
