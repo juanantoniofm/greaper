@@ -75,6 +75,10 @@ log   = apache_log(lines)
 
 broadcast(log, [find_404()])
 
+def get_machine_info():
+    """retrieve information of the machine where this script is running"""
+    import os
+    return {"hostname": os.uname[1]}
 
 def compose_email(data=None):
     """returns the HTML body of an email, with the data in the provided dic"""

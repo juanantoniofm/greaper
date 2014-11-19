@@ -11,21 +11,35 @@ It has to send an email reporting:
 - mention in the template what exactly is checking
 	- in which machine is running
 	- the purpose of the check
-- is has to be easy to maintain
 - report also so me of the relevant errors like:
 
 	- most common 500 errors
 	- most common 400 errors
 
+## How it works
+
+Its based on the producer/consumer model, having several consumer fo one producer (the method that reads the log).
+
+It was tested in a 300MB file, using 99% of 1 CPU thread, and 6MB of RAM to run during 49-53 seconds (approx).
+
+It is highly portable, and easily extendable, what means that can be used for many other purposes, like application logs, etc.
+In fact, as-is is ready to handle any other log from apache (with our current configuration)
+
+
 
 ## Dependencies
 
 - jinja2
-- 
+	- markupsafe
+- smtplib (builtin)
 
 
-# Defects
+# Bugs, Improvements, etc
 
 - the code in the stats builder method should be cleaner and splitted
-- we are not really using gens to open the file
+- It would be better to use command line args to specify
+	- the logfile
+	- the level of detail reporting
+	- the addresses to send the email to
+
 
