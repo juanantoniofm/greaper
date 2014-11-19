@@ -42,3 +42,14 @@ def consumer(func):
     return start
 
 
+
+def read_in_lines(fh = None):
+    """read a file line by line
+    In a lazy way
+    """
+    while True:
+        line = fh.readline()
+        if not line:
+            break
+        yield line
+ 

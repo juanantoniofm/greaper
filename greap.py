@@ -5,9 +5,7 @@
 # using co-routines to define consumers for the Apache log data
 # http://www.dabeaz.com/generators/logcoroutine.py
 
-from lib.jinja2 import Template
-
-from lib.helpers import apache_log, field_map, consumer
+from lib.helpers import apache_log, field_map, consumer, read_in_lines
 from lib.broadcast import *
 import settings
 
@@ -20,6 +18,7 @@ def add_entry(r=None,totalstatus=None):
     # TODO: this is not being GC properly, causing a memory leak.... sloppy...
     assert r is not None
     assert totalstatus is not None
+    print "R:", r
     try:
         #if r["status"] == 405:
             #print r
@@ -54,40 +53,16 @@ def add_entry(r=None,totalstatus=None):
 
 
 @consumer
-def find_404():
+def get_stats():
     global stats
     while True:
         r = (yield)
         add_entry(r, stats)
+        print("DEBUG:", stats)
 
-
-def read_in_lines(fh = None):
-    """read a file line by line"""
-    while True:
-        line = fh.readline()
-        if not line:
-            break
-        yield line
-    
 
 lines = read_in_lines(open(settings.logfile,"r"))
 log   = apache_log(lines)
 
-broadcast(log, [find_404()])
+broadcast(log, [get_stats()])
 
-def get_machine_info():
-    """retrieve information of the machine where this script is running"""
-    import os
-    return {"hostname": os.uname[1]}
-
-def compose_email(data=None):
-    """returns the HTML body of an email, with the data in the provided dic"""
-    assert data is not None
-    template_file = settings.template_file
-    with open(template_file) as tf:
-        t = Template(tf.read())
-        return t.render(data)
-
-
-print compose_email({"stats": stats})
-#print stats
