@@ -37,3 +37,11 @@ def add_entry(r=None,totalstatus=None):
 
 
 
+def uno():
+    pass
+
+def dos():
+    pass
+
+def tres():
+    pass

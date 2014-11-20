@@ -1,0 +1,132 @@
+#!/usr/bin/python
+
+# logcoroutine.py
+#
+# using co-routines to define consumers for the Apache log data
+# http://www.dabeaz.com/generators/logcoroutine.py
+
+import argparse
+
+from lib.helpers import apache_log, field_map, consumer
+from myfilters import add_entry,uno,dos,tres
+from lib.broadcast import *
+import settings
+
+filters_enabled = {
+        "uno":uno,
+        "dos": dos,
+        "tres": tres
+        }
+
+command_parser = argparse.ArgumentParser(
+        description="get some cool stats from apache logs")
+
+command_parser.add_argument("-v","--verbose", action="store_true",
+        help="enable debug output", required=False, default=False)
+
+command_parser.add_argument("-q","--query", dest="query",
+        help="select this fields from the log line", required=False)
+
+command_parser.add_argument("-f","--filter", dest="filters",
+        help="use custom built filters (available: {0})".format(
+                [x for x in filters_enabled.iterkeys()]),
+        required=False)
+
+command_parser.add_argument("-i","--input", dest="input_file",
+        help="Filename to read input from", required=True)
+
+command_parser.add_argument("-g","--grep", dest="grep_regex",
+        help="Use the expresion t filter the input", required=False)
+
+command_parser.add_argument("-ng","--ngrep",  action="store_false", default = True,
+        help="negative grep. Filter the lines that NOT match the expresion (like grep -v regex)", required=False)
+
+args = vars(command_parser.parse_args()) 
+
+
+
+################################################################################
+
+stats = {
+        "200" : { "count" : 0},
+        }
+
+@consumer
+def get_stats():
+    global stats
+    while True:
+        r = (yield)
+        add_entry(r, stats)
+        print("DEBUG:", stats)
+
+import time
+
+def filter_time(strtime, out_format = "%H:%M", in_format = "%d/%b/%Y:%H:%M:%S +0000"):
+    """convert a string to a proper datetime timestamp"""
+    stamp =  time.strptime(strtime, in_format)
+    return time.strftime(out_format, stamp)
+
+def grepit(line, regex=None):
+    """only returns a line if it matches the rexex"""
+    if regex is None:
+        return line
+    else:
+        if (regex in line) == args["ngrep"]:
+            print "DEBUG:","QQQQQQQQQ"
+            return line
+        else:
+            print "DEBUG: ","NO MATCH"
+
+
+def read_in_lines(fh = None):
+    """read a file line by line
+    In a lazy way
+    """
+    while True:
+        line = fh.readline()
+        if not line:
+            break
+        else:
+            if not grepit(line, args["grep_regex"] ):
+                # check that the line matches with the pre-regex and if not, break
+                yield ""
+            else:
+                if args["verbose"]:
+                    print "DEBUG:", line # print debug info
+                yield line
+ 
+@consumer
+def neilfilter():
+    while True:
+        r=(yield)
+        # Check if the uri is on the interests list
+        interesting = ["/integration-opera/services",
+                      "/ws/fidelio"]
+        if r['request'] in interesting:
+            if args["verbose"]:
+                # print debug info
+                print r
+            #print r["host"], r["request"]
+            print filter_time(r['datetime']),r["host"] , r["request"]
+
+@consumer
+def plain_print():
+    while True:
+        r=(yield)
+        print r
+
+################################################################################
+
+
+print args
+
+
+
+lines = read_in_lines(open(args["input_file"],"r"))
+#lines = read_in_lines(open(settings.logfile,"r")) # based on settings config
+log   = apache_log(lines)
+
+broadcast(log, [plain_print()])
+
+
+

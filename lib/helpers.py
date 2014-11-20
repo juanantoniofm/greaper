@@ -23,7 +23,7 @@ def apache_log(lines):
     tuples = (g.groups() for g in groups if g)
     
     colnames = ('host','referrer','user','datetime',
-            'method', 'request','proto','status','bytes','crap','useragent')
+            'method', 'request','proto','status','bytes','from','useragent')
 
     log      = (dict(zip(colnames,t)) for t in tuples)
     log      = field_map(log,"status",int)
@@ -42,14 +42,3 @@ def consumer(func):
     return start
 
 
-
-def read_in_lines(fh = None):
-    """read a file line by line
-    In a lazy way
-    """
-    while True:
-        line = fh.readline()
-        if not line:
-            break
-        yield line
- 
