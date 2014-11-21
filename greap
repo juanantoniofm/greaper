@@ -118,7 +118,14 @@ def compose(query, data=None):
     :data:  the dictionary with the parsed line.
     :return: the line to print with the fields in the order specified in query."""
     rl = " "
-    for f in query.split(","):
+    #- first figure out which fields to print. either all of just queried ones.
+    if query is None:
+        queried_fields = [x for x in data.iterkeys()]
+        output(queried_fields.__str__(),"DEBUG",loglevel)
+    else:
+        queried_fields = query.split(",")
+    #- then go and create the line
+    for f in queried_fields:
         rl += data[f].__str__() + " "
     return rl
 
@@ -135,7 +142,7 @@ def query_print():
 ################################################################################
 
 output(args.__str__(),"DEBUG",loglevel) # show the params for debug purposes
-
+define_loglevel()
 lines = read_in_lines(open(args["input_file"],"r"))
 #lines = read_in_lines(open(settings.logfile,"r")) # based on settings config
 log   = apache_log(lines)
