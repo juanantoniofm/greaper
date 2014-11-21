@@ -32,7 +32,9 @@ so far, everything is built in.
 
 ### specify fields in the command line
 
-greap.py --query host,request
+With this tool, we can specify the fields that we want in the output of the execution. The order of the fields will be the same specified in this parameter. 
+
+	greap.py --query host,request
 
 
 ### specify custom-built filter for more advanced output
@@ -43,9 +45,9 @@ We can create filters in python, with more advanced features, like sum, average,
 
 ### specify input file
 
-	grep --input filename.log
+	greap --input filename.log
 
-	grep -i filename.log
+	greap -i filename.log
 
 ### pre  grep-ping
 
@@ -62,7 +64,10 @@ being able to filter the things we DON'T want to process, before actually parse 
 
 	greap --ngrep <expresion>  -i file.log
 
-	greap --ng <expresion>  -i file.log
+	greap -ng <expresion>  -i file.log
 
 
-### 
+### Verbose
+
+so far there are only 2 modes, normal, y verbose. 
+Verbose shows debug output, thats it.

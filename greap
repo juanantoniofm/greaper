@@ -7,16 +7,12 @@
 
 import argparse
 
-from lib.helpers import apache_log, field_map, consumer
+from lib.helpers import apache_log, field_map, consumer, output, filter_time
 from myfilters import add_entry,uno,dos,tres
 from lib.broadcast import *
 import settings
 
-filters_enabled = {
-        "uno":uno,
-        "dos": dos,
-        "tres": tres
-        }
+filters_enabled = { }
 
 command_parser = argparse.ArgumentParser(
         description="get some cool stats from apache logs")
@@ -29,7 +25,8 @@ command_parser.add_argument("-q","--query", dest="query",
 
 command_parser.add_argument("-f","--filter", dest="filters",
         help="use custom built filters (available: {0})".format(
-                [x for x in filters_enabled.iterkeys()]),
+                ", ".join(filters_enabled.iterkeys())),
+                #[x for x in filters_enabled.iterkeys()]),
         required=False)
 
 command_parser.add_argument("-i","--input", dest="input_file",
@@ -51,20 +48,15 @@ stats = {
         "200" : { "count" : 0},
         }
 
-@consumer
-def get_stats():
-    global stats
-    while True:
-        r = (yield)
-        add_entry(r, stats)
-        print("DEBUG:", stats)
+loglevel = "QUIET"  # the default value is DEBUG untill further development
 
-import time
 
-def filter_time(strtime, out_format = "%H:%M", in_format = "%d/%b/%Y:%H:%M:%S +0000"):
-    """convert a string to a proper datetime timestamp"""
-    stamp =  time.strptime(strtime, in_format)
-    return time.strftime(out_format, stamp)
+def define_loglevel():
+    """sets a level of detail for the log."""
+    global loglevel
+    if args["verbose"]:
+        loglevel = "DEBUG"
+
 
 def grepit(line, regex=None):
     """only returns a line if it matches the rexex"""
@@ -72,10 +64,7 @@ def grepit(line, regex=None):
         return line
     else:
         if (regex in line) == args["ngrep"]:
-            print "DEBUG:","QQQQQQQQQ"
             return line
-        else:
-            print "DEBUG: ","NO MATCH"
 
 
 def read_in_lines(fh = None):
@@ -91,10 +80,20 @@ def read_in_lines(fh = None):
                 # check that the line matches with the pre-regex and if not, break
                 yield ""
             else:
-                if args["verbose"]:
-                    print "DEBUG:", line # print debug info
+                output(line, "DEBUG:",loglevel) # print debug info
                 yield line
  
+################################################################################
+
+@consumer
+def get_stats():
+    global stats
+    while True:
+        r = (yield)
+        add_entry(r, stats)
+        output(stats, "DEBUG:", loglevel)
+
+
 @consumer
 def neilfilter():
     while True:
@@ -103,11 +102,9 @@ def neilfilter():
         interesting = ["/integration-opera/services",
                       "/ws/fidelio"]
         if r['request'] in interesting:
-            if args["verbose"]:
-                # print debug info
-                print r
+            output(r, "DEBUG",loglevel)
             #print r["host"], r["request"]
-            print filter_time(r['datetime']),r["host"] , r["request"]
+            output("".join[ filter_time(r['datetime']),r["host"] , r["request"] ])
 
 @consumer
 def plain_print():
@@ -115,18 +112,34 @@ def plain_print():
         r=(yield)
         print r
 
+def compose(query, data=None):
+    """compose the resulting line of the query ready for output.
+    :query: list of params to print from the log line parsed.
+    :data:  the dictionary with the parsed line.
+    :return: the line to print with the fields in the order specified in query."""
+    rl = " "
+    for f in query.split(","):
+        rl += data[f].__str__() + " "
+    return rl
+
+
+
+
+@consumer
+def query_print():
+    while True:
+        r=(yield)
+        output(compose(args["query"], r))
+
+
 ################################################################################
 
-
-print args
-
-
+output(args.__str__(),"DEBUG",loglevel) # show the params for debug purposes
 
 lines = read_in_lines(open(args["input_file"],"r"))
 #lines = read_in_lines(open(settings.logfile,"r")) # based on settings config
 log   = apache_log(lines)
 
-broadcast(log, [plain_print()])
-
+broadcast(log, [query_print()])
 
 

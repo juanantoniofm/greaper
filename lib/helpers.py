@@ -42,3 +42,27 @@ def consumer(func):
     return start
 
 
+def output(msg = None, level=None,output_level="DEBUG" ):
+    """shows or not a message, depending on the level of output selected.
+    level > level of the current message to send
+    output_level > level of the logging detail desired"""
+    if msg == None:
+        return None  # nothing to do here
+    if level == None:
+        # regular message then
+        print msg
+        return msg
+    # If there is any kind of loglevel, means app message
+    loglevels = "DEBUG WARNING INFO QUIET"
+    if level in loglevels[loglevels.find(output_level):]:
+        print level, msg
+        return " ".join([level,msg])
+    
+import time
+
+def filter_time(strtime, out_format = "%H:%M", in_format = "%d/%b/%Y:%H:%M:%S +0000"):
+    """convert a string to a proper datetime timestamp"""
+    stamp =  time.strptime(strtime, in_format)
+    return time.strftime(out_format, stamp)
+
+
