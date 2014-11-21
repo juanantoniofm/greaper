@@ -71,3 +71,15 @@ being able to filter the things we DON'T want to process, before actually parse 
 
 so far there are only 2 modes, normal, y verbose. 
 Verbose shows debug output, thats it.
+
+### file format chooser
+
+the first version supports apache logs, but as functionality expands, we need a way to clearly tell the tool which kind of log are we talking about. 
+
+the current logic is pretty simple, based on the name of the input file, or falling back to apache if undetermined.
+
+	greap -i file.log -k apache
+
+	greap -i file.log -k channel
+
+
