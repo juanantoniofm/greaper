@@ -27,6 +27,8 @@ so far, everything is built in.
 	- the addresses to send the email to
 - use proper regex in the grepit prefilter, instead of plain string matching
 - being able to cat/tail logs into the script.
+- multiple input files specified in the command line (that will trigger multiple producers, and follow some order)
+
 
 ## Proposed use cases:
 
