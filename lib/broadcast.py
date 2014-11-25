@@ -1,6 +1,8 @@
 # broadcast.py
 #
 # Broadcast a generator source to a collection of consumers
+# see
+# http://www.dabeaz.com/generators/logcoroutine.py
 
 def broadcast(source, consumers):
     for item in source:

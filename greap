@@ -1,13 +1,9 @@
 #!/usr/bin/python
 
-# logcoroutine.py
-#
-# using co-routines to define consumers for the Apache log data
-# http://www.dabeaz.com/generators/logcoroutine.py
 
 import argparse
 
-from lib.helpers import apache_log, field_map, consumer, output, filter_time
+from lib.helpers import apache_log, field_map, consumer, output, filter_time, app_log
 from myfilters import add_entry,uno,dos,tres
 from lib.broadcast import *
 import settings
@@ -176,7 +172,8 @@ output(args.__str__(),"DEBUG",loglevel) # show the params for debug purposes
 define_loglevel()
 lines = read_in_lines(open(args["input_file"],"r"))
 #lines = read_in_lines(open(settings.logfile,"r")) # based on settings config
-log   = apache_log(lines)
+#log   = apache_log(lines)
+log   = app_log(lines)
 
 broadcast(log, [query_print()])
 

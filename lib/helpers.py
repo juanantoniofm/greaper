@@ -1,6 +1,8 @@
 
 import re
 
+################################################################################
+
 def field_map(dictseq, name, func):
     """ Take a sequence of dictionaries and remap one of the fields
     """
@@ -14,7 +16,28 @@ logpats  = r'(\S+) (\S+) (\S+) \[(.*?)\] ' \
            #r'"(\S+) (\S+) (\S+)" (\S+) (\S+) "(\S+)" "(\S* ?\S* ?\S*)"' # carefull, not compatible with other logs
            #r'"(\S+) (\S+) (\S+)" (\S+) (\S+) (\S+) (\S+)'
 
-logpat   = re.compile(logpats)
+appline = r'(\w{3} \d{2} \d{2}:\d{2}:\d{2}) (app\w{4}\d{2}) ([a-z\-]*): (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) (\w*) *\[(.*)\] (.*) - (.*)'
+
+#logpat   = re.compile(logpats)
+logpat = re.compile(appline)
+
+def app_log(lines):
+    """
+    Parse an application log into a sequence of dicts
+    """
+    groups = (logpat.match(line) for line in lines)
+    tuples = (g.groups() for g in groups if g)
+
+    colnames = ('logdate','machine','logfile','appdate','loglevel','tracing',
+                'jobtype','action')
+
+    log = (dict(zip(colnames,t)) for t in tuples)
+    #log      = field_map(log,"status",int)
+    #log      = field_map(log,"bytes",
+    #                     lambda s: int(s) if s != '-' else 0)
+
+    return log
+
 
 def apache_log(lines):
     """Parse an apache log file into a sequence of dictionaries
