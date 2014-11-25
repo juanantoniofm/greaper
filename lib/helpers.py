@@ -16,7 +16,7 @@ logpats  = r'(\S+) (\S+) (\S+) \[(.*?)\] ' \
            #r'"(\S+) (\S+) (\S+)" (\S+) (\S+) "(\S+)" "(\S* ?\S* ?\S*)"' # carefull, not compatible with other logs
            #r'"(\S+) (\S+) (\S+)" (\S+) (\S+) (\S+) (\S+)'
 
-appline = r'(\w{3} \d{2} \d{2}:\d{2}:\d{2}) (app\w{4}\d{2}) ([a-z\-]*): (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) (\w*) *\[(.*)\] (.*) - (.*)'
+appline = r'(\w{3} \d{2} \d{2}:\d{2}:\d{2}) (app\w{4}\d{2}) ([a-z\-]*): (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) (\w*) *\[(.*?)\] (.*?) - (.*)'
 
 #logpat   = re.compile(logpats)
 logpat = re.compile(appline)

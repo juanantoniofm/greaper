@@ -28,6 +28,7 @@ so far, everything is built in.
 - use proper regex in the grepit prefilter, instead of plain string matching
 - being able to cat/tail logs into the script.
 - multiple input files specified in the command line (that will trigger multiple producers, and follow some order)
+- if no query values are specified, but there is a -q flag, show the available fields
 
 
 ## Proposed use cases:
