@@ -2,11 +2,12 @@
 
 
 import argparse
+import sys
 
-from lib.helpers import apache_log, field_map, consumer, output, convert_time, app_log
-from lib.helpers import mpt, broadcast, get_producer
+from lib.parsmap import apache_log, field_map, consumer, convert_time, app_log
+from lib.parsmap import mpt, broadcast, get_producer
+from lib.helpers import output 
 import myfilters 
-import settings
 
 command_parser = argparse.ArgumentParser(
         description="get some cool stats from apache logs")
@@ -138,14 +139,16 @@ def query_print():
 
 ################################################################################
 
-output(args.__str__(),"DEBUG",loglevel) # show the params for debug purposes
-define_loglevel()
-lines = read_in_lines(open(args["input_file"],"r"))
-#TODO: rewrite based in mapper
-#log   = apache_log(lines)
-#log   = app_log(lines)
-log = get_producer(args["log_format"])(lines)
+try:
+    output(args.__str__(),"DEBUG",loglevel) # show the params for debug purposes
+    define_loglevel()
+    lines = read_in_lines(open(args["input_file"],"r"))
 
-broadcast(log, [query_print()])
+    log = get_producer(args["log_format"])(lines)
 
+    broadcast(log, [query_print()])
+
+except Exception as e:
+    output(e.__str__(), "ERROR")
+    sys.exit(1)
 

@@ -75,6 +75,10 @@ being able to filter the things we DON'T want to process, before actually parse 
 so far there are only 2 modes, normal, y verbose. 
 Verbose shows debug output, thats it.
 
+The output of the app is preceded always by a special prefix:
+	
+	GREAP <LOGLEVEL> Error message
+
 ### file format chooser
 
 the first version supports apache logs, but as functionality expands, we need a way to clearly tell the tool which kind of log are we talking about. 
