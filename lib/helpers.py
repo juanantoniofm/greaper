@@ -76,7 +76,7 @@ mpt = { # a table to define differences among log formats
                       r'(app\w{4}\d{2}) ([a-z\-]*): ' \
                       r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) ' \
                       r'(\w*) *\[(.*?)\] (.*?) - (.*)',
-            "column_names": ('logdate','machine','logfile','appdate','loglevel','tracing',
+            "column_names": ('logdate','machine','logfile','datetime','loglevel','tracing',
                               'jobtype','action'),
             "funcs":""},
         "little_hotelier": { "regex":"",
@@ -103,9 +103,9 @@ def app_log(lines):
     colnames = mpt["channel_manager"]["column_names"]
 
     log = (dict(zip(colnames,t)) for t in tuples)
-    #log      = field_map(log,"status",int)
-    #log      = field_map(log,"bytes",
-    #                     lambda s: int(s) if s != '-' else 0)
+    log      = field_map(log,"datetime",convert_time)
+    log      = field_map(log,"bytes",
+                         lambda s: int(s) if s != '-' else 0)
 
     return log
 
@@ -182,3 +182,11 @@ def define_logkind():
         return validate_logkind(args["log_format"])
     output(logkind, "INFO",loglevel) #WAT? what the hell was i thinking with this?? TODO: delete it
 
+
+def get_producer(logkind="apache"):
+    producers = {
+            "apache": apache_log,
+            "channel_manager": app_log
+            }
+    #return mpt[logkind]["producer"] #based on master dict. not working, circular dep
+    return producers[logkind]

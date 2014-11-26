@@ -148,3 +148,27 @@ class test_apache_log(BaseTest):
         input_line = "wtf"
         eq_([],[ f for f in  apache_log(input_line)])
 
+################################################################################
+from helpers import define_logkind
+
+args = {"log_format": ""}
+
+class test_define_logkind(BaseTest):
+    def setUp(self):
+        global args
+        args = {}
+
+    def test_no_format_defined_fall_to_apache(self):
+        global args
+        args["log_format"] = ""
+        eq_("apache", define_logkind())
+
+    def test_normal_format_recognised(self):
+        global args
+        args["log_format"] = "channel_manager"
+        eq_("channel_manager", define_logkind())
+
+    def test_unknown_format_not_recognised(self):
+        global args
+        args["log_format"] = "NOTVALID"
+        eq_("apache", define_logkind())

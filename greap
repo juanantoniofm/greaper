@@ -4,7 +4,7 @@
 import argparse
 
 from lib.helpers import apache_log, field_map, consumer, output, convert_time, app_log
-from lib.helpers import mpt, broadcast
+from lib.helpers import mpt, broadcast, get_producer
 import myfilters 
 import settings
 
@@ -141,9 +141,10 @@ def query_print():
 output(args.__str__(),"DEBUG",loglevel) # show the params for debug purposes
 define_loglevel()
 lines = read_in_lines(open(args["input_file"],"r"))
-#lines = read_in_lines(open(settings.logfile,"r")) # based on settings config
+#TODO: rewrite based in mapper
 #log   = apache_log(lines)
-log   = app_log(lines)
+#log   = app_log(lines)
+log = get_producer(args["log_format"])(lines)
 
 broadcast(log, [query_print()])
 
