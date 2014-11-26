@@ -61,10 +61,37 @@ def field_map(dictseq, name, func):
         yield d
 
 
+mpt = { # a table to define differences among log formats
+        "apache": {
+            "regex":r'(\S+) (\S+) (\S+) \[(.*?)\] ' \
+                       r'"(\S+) (\S+) (\S+)" (\S+) (\S+) (\S+) (\S* ?\S* ?\S*)',
+                       # carefull, not compatible with other logs:
+                       #r'"(\S+) (\S+) (\S+)" (\S+) (\S+) "(\S+)" "(\S* ?\S* ?\S*)"'
+                       #r'"(\S+) (\S+) (\S+)" (\S+) (\S+) (\S+) (\S+)'
+            "column_names":('host','referrer','user','datetime', 'method',
+                            'request','proto','status','bytes','from','useragent'),
+            "funcs":""},
+        "channel_manager": {
+            "regex": r'(\w{3} \d{2} \d{2}:\d{2}:\d{2}) ' \
+                      r'(app\w{4}\d{2}) ([a-z\-]*): ' \
+                      r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) ' \
+                      r'(\w*) *\[(.*?)\] (.*?) - (.*)',
+            "column_names": ('logdate','machine','logfile','appdate','loglevel','tracing',
+                              'jobtype','action'),
+            "funcs":""},
+        "little_hotelier": { "regex":"",
+            "column_names":"",
+            "funcs":""},
+        "bbapp" : {}
+        }
+
 
 
 #logpat   = re.compile(logpats)
 logpat = re.compile(mpt["channel_manager"]["regex"])
+
+################################################################################
+
 
 def app_log(lines):
     """
@@ -73,8 +100,7 @@ def app_log(lines):
     groups = (logpat.match(line) for line in lines)
     tuples = (g.groups() for g in groups if g)
 
-    colnames = ('logdate','machine','logfile','appdate','loglevel','tracing',
-                'jobtype','action')
+    colnames = mpt["channel_manager"]["column_names"]
 
     log = (dict(zip(colnames,t)) for t in tuples)
     #log      = field_map(log,"status",int)
@@ -90,8 +116,7 @@ def apache_log(lines):
     groups = (logpat.match(line) for line in lines)
     tuples = (g.groups() for g in groups if g)
     
-    colnames = ('host','referrer','user','datetime',
-            'method', 'request','proto','status','bytes','from','useragent')
+    colnames = mpt["apache"]["column_names"]
 
     log      = (dict(zip(colnames,t)) for t in tuples)
     log      = field_map(log,"status",int)
@@ -132,27 +157,6 @@ def convert_time(strtime, in_format = "%d/%b/%Y:%H:%M:%S +0000", out_format = "%
     return time.strftime(out_format, stamp)
 
 
-mpt = { # a table to define differences among log formats
-        "apache": { "regex":"", r'(\S+) (\S+) (\S+) \[(.*?)\] ' \
-                           r'"(\S+) (\S+) (\S+)" (\S+) (\S+) (\S+) (\S* ?\S* ?\S*)'
-                           # carefull, not compatible with other logs:
-                           #r'"(\S+) (\S+) (\S+)" (\S+) (\S+) "(\S+)" "(\S* ?\S* ?\S*)"'
-                           #r'"(\S+) (\S+) (\S+)" (\S+) (\S+) (\S+) (\S+)'
-            "colum_names":"",
-            "funcs":""},
-        "channel_manager": { "regex": r'(\w{3} \d{2} \d{2}:\d{2}:\d{2}) ' \
-                              r'(app\w{4}\d{2}) ([a-z\-]*): ' \
-                              r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) ' \
-                              r'(\w*) *\[(.*?)\] (.*?) - (.*)',
-            "colum_names":"",
-            "funcs":""},
-        "little_hotelier": { "regex":"",
-            "colum_names":"",
-            "funcs":""},
-        "bbapp" : {}
-        }
-
-################################################################################
 
 def guess_logkind(filename):
     """try to guess the kind of log from the filename"""
