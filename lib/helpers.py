@@ -9,7 +9,7 @@ def enabled_level(output_level):
 
 
 
-def output(msg = None, level=None,output_level="DEBUG" ):
+def output(msg = None, level=None,output_level="QUIET" ):
     """shows or not a message, depending on the level of output selected.
     level > level of the current message to send
     output_level > level of the logging detail desired"""
