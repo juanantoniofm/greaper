@@ -82,11 +82,17 @@ mpt = { # a table to define differences among log formats
             "funcs":""},
         "little_hotelier": { "regex":"",
             "column_names":"",
-            "funcs":""},
-        "bbapp" : {}
+            "funcs":""}
         }
 
 
+def list_fields():
+    """make a nice list of the fields available for each kind of log"""
+    help_line = ""
+    for kind, v in mpt.iteritems():
+        help_line += kind + ": " + mpt[kind]["column_names"].__str__() + ";"
+
+    return help_line
 
 #logpat   = re.compile(logpats)
 logpat = re.compile(mpt["channel_manager"]["regex"])
