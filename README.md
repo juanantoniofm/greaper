@@ -29,6 +29,7 @@ so far, everything is built in.
 - being able to cat/tail logs into the script.
 - multiple input files specified in the command line (that will trigger multiple producers, and follow some order)
 - if no query values are specified, but there is a -q flag, show the available fields
+- for cm sync logs, take the "Enqueue sync request <tokens>" and use a consumer to detect it, and print aditional tracking info for it.
 
 
 ## Proposed use cases:

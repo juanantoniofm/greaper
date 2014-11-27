@@ -81,10 +81,10 @@ mpt = { # a table to define differences among log formats
                       r'(\w*) *\[(.*?)\] (.*?) - (.*)',
             "column_names": ('logdate','machine','logfile','datetime','loglevel','tracing',
                               'jobtype','action'),
-            "funcs":""},
-        "little_hotelier": { "regex":"",
-            "column_names":"",
-            "funcs":""}
+            "funcs":""}#,
+        #"little_hotelier": { "regex":"",
+        #    "column_names":"",
+        #    "funcs":""}
         }
 
 

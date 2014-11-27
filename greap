@@ -10,7 +10,10 @@ from lib.helpers import output
 import myfilters 
 
 command_parser = argparse.ArgumentParser(
-        description="get some cool stats from apache logs")
+        description="get some cool stats from apache logs",
+        formatter_class=argparse.RawTextHelpFormatter)
+        # see /System/Library/Frameworks/Python.framework/Versions/Current/lib/python2.7/argparse.py
+        # this formatter takes the raw input. see the source code for more formatters.
 
 command_parser.add_argument("-v","--verbose", action="store_true",
         help="enable debug output", required=False, default=False)
@@ -35,7 +38,7 @@ command_parser.add_argument("-k","--kind", dest="log_format",
 command_parser.add_argument("-g","--grep", dest="grep_regex",
         help="Use the expresion t filter the input", required=False)
 
-command_parser.add_argument("-ng","--ngrep",  action="store_false", default = True,
+command_parser.add_argument("-ng","--ngrep", dest="ngrep_regex",
         help="negative grep. Filter the lines that NOT match the expresion (like grep -v regex)", required=False)
 
 args = vars(command_parser.parse_args()) 
@@ -55,8 +58,10 @@ def define_loglevel():
     if args["verbose"]:
         loglevel = "DEBUG"
 
-def grepit(line, regex=None):
-    """only returns a line if it matches the rexex"""
+def grepit(line, regex=None, nregex = None):
+    """
+    only returns a line if it matches the rexex, and doesn't match the ngrep regex
+    """
     if regex is None:
         return line
     else:
