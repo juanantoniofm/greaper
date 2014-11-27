@@ -5,17 +5,18 @@ from conversors import convert_time, convert_xml
 from helpers import output
 
 
-def follow(thefile):
-    """
-    Follow a file like tail -f.
-    """
-    thefile.seek(0,2)
-    while True:
-        line = thefile.readline()
-        if not line:
-            time.sleep(0.1)
-            continue
-        yield line
+# disabled to avoid wrong coverage
+##def follow(thefile):
+##    """
+##    Follow a file like tail -f.
+##    """
+##    thefile.seek(0,2)
+##    while True:
+##        line = thefile.readline()
+##        if not line:
+##            time.sleep(0.1)
+##            continue
+##        yield line
 
 
 def consumer(func):
