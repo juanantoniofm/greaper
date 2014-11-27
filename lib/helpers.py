@@ -4,6 +4,8 @@ import sys
 import traceback
 
 def enabled_level(output_level):
+    if output_level is None:
+        raise ValueError("No proper log level enabled")
     loglevels = "DEBUG WARNING INFO ERROR QUIET"
     return loglevels[loglevels.find(output_level):]
 
@@ -22,7 +24,7 @@ def output(msg = None, level=None,output_level="QUIET" ):
     # If there is any kind of loglevel, means app message
     if level in enabled_level(output_level):
         output_msg = "GREAP [{0}] {1}"
-        if type( msg) is not type(""):
+        if type(msg) is not type(""):
             output_msg = output_msg.format(level,msg.__str__())
             if "DEBUG" in enabled_level(output_level):
                 print("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW") 

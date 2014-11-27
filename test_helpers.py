@@ -23,7 +23,7 @@ class test_output(BaseTest):
 
     def test_info_on_debug(self):
         """ we print info mesg on debug lev"""
-        assert output(self.msg,"INFO") is not None
+        assert output(self.msg,"INFO","DEBUG") is not None
 
     def test_void_msg(self):
         """nothing breaks in null message"""
@@ -41,17 +41,21 @@ class test_output(BaseTest):
 
     def test_exceptions(self):
         """we log exceptions as trace"""
+        #TODO: write a proper test to pass a exception to output
         try:
             raise Exception("faki faki faki")
         except Exception as e:
             res = output(e, "ERROR")
+            eq_("",res)
 
-        eq_("",res)
+    def test_none_input(self):
+        """none input returns none"""
+        eq_(None, output())
 
 ################################################################################
 from helpers import enabled_level
 
-class test_output(BaseTest):
+class test_enabled_level(BaseTest):
     def test_debug(self):
         eq_("DEBUG WARNING INFO ERROR QUIET", enabled_level("DEBUG"))
 
@@ -67,3 +71,6 @@ class test_output(BaseTest):
     def test_quiet(self):
         eq_("QUIET", enabled_level("QUIET"))
 
+    @raises(ValueError)
+    def test_none_input(self):
+        eq_(None, enabled_level(None))

@@ -141,3 +141,22 @@ class test_define_logkind(BaseTest):
         global args
         args["log_format"] = "NOTVALID"
         eq_("apache", define_logkind())
+
+
+################################################################################
+from parsmap import  field_map
+
+class test_field_map(BaseTest):
+    def setUp(self):
+        self.columns = ('a','b','c')
+        self.fields = ('11','22','33')
+        self.d = {'a':'11','b':'22'}
+        def fake_func(param):
+            return int(param)
+        self.ff = fake_func
+
+
+    def test_testing_test(self):
+        """testing if we can actually test this thing"""
+        d = field_map(self.d,'a',self.ff)
+        eq_({'a':11,'b':'22'}, d[0])

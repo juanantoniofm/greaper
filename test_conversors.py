@@ -16,5 +16,14 @@ class test_convert_xml(unittest.TestCase):
     def setUp(self):
         self.basic_logdata = {"action":""}
 
-    def test_empty_content_is_ok(self):
+    @raises(TypeError)
+    def test_a_dic_is_wrong(self):
         eq_("",convert_xml(self.basic_logdata))
+
+    @raises(TypeError)
+    def test_none(self):
+        eq_("",convert_xml(None))
+
+    @raises(TypeError)
+    def test_wrong_input(self):
+        eq_("",convert_xml(""))
