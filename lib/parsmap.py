@@ -2,6 +2,7 @@ from time import sleep
 import re
 
 from conversors import convert_time, convert_xml
+from helpers import output
 
 
 def follow(thefile):
@@ -159,10 +160,15 @@ def define_logkind():
     output(logkind, "INFO",loglevel) #WAT? what the hell was i thinking with this?? TODO: delete it
 
 
-def get_producer(logkind="apache"):
+def get_producer(logkind):
     producers = {
             "apache": apache_log,
             "channel_manager": app_log
             }
+    lk = apache_log # by default
+    try: 
+        lk = producers[logkind]
+    except:
+        output("no producer found for: {0}".format(logkind), "DEBUG")
     #return mpt[logkind]["producer"] #based on master dict. not working, circular dep
-    return producers[logkind]
+    return lk
