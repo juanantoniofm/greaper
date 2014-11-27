@@ -110,10 +110,14 @@ def app_log(lines):
 
     colnames = mpt["channel_manager"]["column_names"]
 
-    log = (dict(zip(colnames,t)) for t in tuples)
-    log      = field_map(log,"datetime",convert_time,"%Y-%m-%d %H:%M:%S,%f")
-    log      = field_map(log,"logdate",convert_time,"%b %d %H:%M:%S")
-    log      = field_map(log,"action",convert_xml)
+    try:
+        log = (dict(zip(colnames,t)) for t in tuples)
+        log      = field_map(log,"datetime",convert_time,"%Y-%m-%d %H:%M:%S,%f")
+        log      = field_map(log,"logdate",convert_time,"%b %d %H:%M:%S")
+        log      = field_map(log,"action",convert_xml)
+    except Exception as e:
+        output("Are you sure you have chosen the application logformat?","INFO")
+        raise sys.exc_info[1], None, exc_info[2]
 
     return log
 
@@ -126,10 +130,15 @@ def apache_log(lines):
     
     colnames = mpt["apache"]["column_names"]
 
-    log      = (dict(zip(colnames,t)) for t in tuples)
-    log      = field_map(log,"status",int)
-    log      = field_map(log,"bytes",
-                         lambda s: int(s) if s != '-' else 0)
+    try:
+        log      = (dict(zip(colnames,t)) for t in tuples)
+        log      = field_map(log,"status",int)
+        log      = field_map(log,"bytes",
+                             lambda s: int(s) if s != '-' else 0)
+    except:
+        print ("""barrrr""")
+        output("Are you sure you have chosen the apache logformat?","INFO")
+        raise sys.exc_info[1], None, exc_info[2]
 
     return log
 
@@ -157,7 +166,6 @@ def define_logkind():
     else:
         # user defined, so check if is valid
         return validate_logkind(args["log_format"])
-    output(logkind, "INFO",loglevel) #WAT? what the hell was i thinking with this?? TODO: delete it
 
 
 def get_producer(logkind):
@@ -166,6 +174,7 @@ def get_producer(logkind):
             "channel_manager": app_log
             }
     lk = apache_log # by default
+    global loglevel
     try: 
         lk = producers[logkind]
     except:

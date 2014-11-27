@@ -21,10 +21,14 @@ def output(msg = None, level=None,output_level="DEBUG" ):
         return msg
     # If there is any kind of loglevel, means app message
     if level in enabled_level(output_level):
-        if level is "ERROR":
-            print("GREAP {0} {1}".format(level,msg.__str__()), file=sys.stderr)
-            traceback.print_exception(*sys.exc_info())
+        output_msg = "GREAP [{0}] {1}"
+        if type( msg) is not type(""):
+            output_msg = output_msg.format(level,msg.__str__())
+            if "DEBUG" in enabled_level(output_level):
+                print("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW") 
+                traceback.print_exception(*sys.exc_info())
         else:
-            print("GREAP", level, msg)
-        return " ".join([level,msg])
+            output_msg = output_msg.format(level,msg.__str__())
+        print(output_msg, file=sys.stderr)
+        return output_msg
 

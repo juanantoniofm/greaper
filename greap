@@ -48,8 +48,6 @@ stats = {
         "200" : { "count" : 0},
         }
 
-loglevel = "ERROR"  # the default value is DEBUG untill further development
-
 
 def define_loglevel():
     """sets a level of detail for the log."""
@@ -94,18 +92,6 @@ def get_stats():
 
 
 @consumer
-def neilfilter():
-    while True:
-        r=(yield)
-        # Check if the uri is on the interests list
-        interesting = ["/integration-opera/services",
-                      "/ws/fidelio"]
-        if r['request'] in interesting:
-            output(r, "DEBUG",loglevel)
-            #print r["host"], r["request"]
-            output("".join[ convert_time(r['datetime']),r["host"] , r["request"] ])
-
-@consumer
 def plain_print():
     while True:
         r=(yield)
@@ -140,6 +126,13 @@ def query_print():
 
 ################################################################################
 
+loglevel = "ERROR"  # the default value is DEBUG untill further development
+import lib.helpers as helpers
+import lib.parsmap as parsmap
+helpers.loglevel = loglevel
+parsmap.loglevel = loglevel
+print "log level" + loglevel
+
 try:
     output(args.__str__(),"DEBUG",loglevel) # show the params for debug purposes
     define_loglevel()
@@ -148,6 +141,11 @@ try:
     log = get_producer(args["log_format"])(lines)
 
     broadcast(log, [query_print()])
+
+except ValueError as e:
+    output("Are you sure you have choosen the proper logformat?", "ERROR")
+    output(e,"ERROR")
+    sys.exit(1)
 
 except Exception as e:
     output(e, "ERROR")
