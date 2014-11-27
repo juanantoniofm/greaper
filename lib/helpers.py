@@ -1,6 +1,7 @@
 
 from __future__ import print_function
 import sys
+import traceback
 
 def output(msg = None, level=None,output_level="DEBUG" ):
     """shows or not a message, depending on the level of output selected.
@@ -16,7 +17,8 @@ def output(msg = None, level=None,output_level="DEBUG" ):
     loglevels = "DEBUG WARNING INFO ERROR QUIET"
     if level in loglevels[loglevels.find(output_level):]:
         if level is "ERROR":
-            print("GREAP {0} {1}".format(level,msg), file=sys.stderr)
+            print("GREAP {0} {1}".format(level,msg.__str__()), file=sys.stderr)
+            traceback.print_exception(*sys.exc_info())
         else:
             print("GREAP", level, msg)
         return " ".join([level,msg])

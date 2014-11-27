@@ -48,7 +48,7 @@ stats = {
         "200" : { "count" : 0},
         }
 
-loglevel = "QUIET"  # the default value is DEBUG untill further development
+loglevel = "ERROR"  # the default value is DEBUG untill further development
 
 
 def define_loglevel():
@@ -150,6 +150,6 @@ try:
     broadcast(log, [query_print()])
 
 except Exception as e:
-    output(e.__str__(), "ERROR")
+    output(e, "ERROR")
     sys.exit(1)
 
