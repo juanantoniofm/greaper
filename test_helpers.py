@@ -48,3 +48,22 @@ class test_output(BaseTest):
 
         eq_("",res)
 
+################################################################################
+from helpers import enabled_level
+
+class test_output(BaseTest):
+    def test_debug(self):
+        eq_("DEBUG WARNING INFO ERROR QUIET", enabled_level("DEBUG"))
+
+    def test_warning(self):
+        eq_("WARNING INFO ERROR QUIET", enabled_level("WARNING"))
+
+    def test_info(self):
+        eq_("INFO ERROR QUIET", enabled_level("INFO"))
+
+    def test_error(self):
+        eq_("ERROR QUIET", enabled_level("ERROR"))
+
+    def test_quiet(self):
+        eq_("QUIET", enabled_level("QUIET"))
+

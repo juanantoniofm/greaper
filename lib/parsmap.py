@@ -169,6 +169,6 @@ def get_producer(logkind):
     try: 
         lk = producers[logkind]
     except:
-        output("no producer found for: {0}".format(logkind), "DEBUG")
+        output("no producer found for: {0}".format(logkind), "DEBUG",loglevel)
     #return mpt[logkind]["producer"] #based on master dict. not working, circular dep
     return lk
