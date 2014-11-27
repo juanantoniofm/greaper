@@ -27,6 +27,9 @@ so far, everything is built in.
 	- the addresses to send the email to
 - use proper regex in the grepit prefilter, instead of plain string matching
 - being able to cat/tail logs into the script.
+- multiple input files specified in the command line (that will trigger multiple producers, and follow some order)
+- if no query values are specified, but there is a -q flag, show the available fields
+
 
 ## Proposed use cases:
 
@@ -71,6 +74,10 @@ being able to filter the things we DON'T want to process, before actually parse 
 
 so far there are only 2 modes, normal, y verbose. 
 Verbose shows debug output, thats it.
+
+The output of the app is preceded always by a special prefix:
+	
+	GREAP <LOGLEVEL> Error message
 
 ### file format chooser
 
