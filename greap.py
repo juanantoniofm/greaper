@@ -57,15 +57,28 @@ def define_loglevel():
     if args["verbose"]:
         loglevel = "DEBUG"
 
-def grepit(line, regex=None, nregex = None):
+def grepit(line, regex="", nregex = ""):
     """
     only returns a line if it matches the rexex, and doesn't match the ngrep regex
+    :line: line of the log to process
+    :regex: expresion to validate the line
+    :nregex: expresion to discard the line
     """
-    if regex is None:
-        return line
+    if ((nregex is not "" ) and  (nregex in line)): 
+        # if it matches neg regex, return nothing
+        return ""
     else:
-        if (regex in line) == args["ngrep"]:
+        # if not, check if matches positive
+        if ((regex is not "" ) and (regex in line)) :
+            # and if does, return the line
             return line
+        else:
+            return ""
+    #if regex is None:
+    #    return line
+    #else:
+    #    if (regex in line) == args["ngrep"]:
+    #        return line
 
 
 def read_in_lines(fh = None):
@@ -77,7 +90,7 @@ def read_in_lines(fh = None):
         if not line:
             break
         else:
-            if not grepit(line, args["grep_regex"] ):
+            if not grepit(line, args["grep_regex"], args["ngrep_regex"]):
                 # check that the line matches with the pre-regex and if not, break
                 yield ""
             else:
