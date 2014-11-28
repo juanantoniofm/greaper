@@ -68,17 +68,16 @@ def grepit(line, regex="", nregex = ""):
         # if it matches neg regex, return nothing
         return ""
     else:
-        # if not, check if matches positive
-        if ((regex is not "" ) and (regex in line)) :
-            # and if does, return the line
-            return line
+        # if not, check if we have a positive regex
+        if (regex is not "" ):
+            if (regex in line) :
+                # and if does, return the line
+                return line
+            else:
+                return ""
         else:
-            return ""
-    #if regex is None:
-    #    return line
-    #else:
-    #    if (regex in line) == args["ngrep"]:
-    #        return line
+            # if we don't have a positive regex, return line
+            return line
 
 
 def read_in_lines(fh = None):
