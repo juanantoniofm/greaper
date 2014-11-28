@@ -1,5 +1,6 @@
 import unittest
 from nose.tools import *
+import mock
 
 
 
@@ -81,8 +82,30 @@ class test_validate_logkind(BaseTest):
 from parsmap import app_log
 
 class test_app_log(BaseTest):
+    """app_log need lines to be fed.
+    just a list of  strings
+    """
     def setUp(self):
-        pass
+        # open the file and load the sample
+        self.applines=""
+        with open("sample.app.log","r") as f:
+            self.applines = f.readlines()
+
+    @mock.patch('parsmap.conversors.convert_time')
+    def test_convert_time_error(self,mymock):
+        mymock.side_effect=ValueError("bazinga!")
+        r = app_log(self.applines)
+        calling = [l for l in r]
+        eq_(True,mymock.called)
+
+    @mock.patch('conversors.convert_xml')
+    def test_xml_fail(self,mymock):
+        mymock.side_effect=ValueError("bazinga!")
+        mymock.return_value="bazinga!"
+        r = app_log(["Nov 25 16:34:00 appukcm03 cm-dsync-client-app: 2014-11-25 16:34:00,132 INFO  [jobScheduler_Worker-2: ] SyncJob.vcl - Job winding down..."])
+        calling = [l for l in r]
+        eq_([{'loglevel': 'INFO', 'tracing': 'jobScheduler_Worker-2: ', 'datetime': '16:34', 'machine': 'appukcm03', 'logdate': '16:34', 'action': 'Job winding down...', 'logfile': 'cm-dsync-client-app', 'jobtype': 'SyncJob.vcl'}],calling)
+        eq_(True,mymock.called)
 
     def test_empty_lines(self):
         input_line = []
@@ -90,12 +113,18 @@ class test_app_log(BaseTest):
 
     def test_wrong_line(self):
         input_line = "bau asetao euas uabsoeutaneusan uasoe tu asoeuta "
-        assert_raises(ValueError,app_log, input_line)   
+        assert_raises(ValueError,app_log, [input_line])   
         assert type(app_log(input_line)) is type(dict())
 
     def test_wtf(self):
         input_line = "wtf"
         eq_([],[ f for f in  app_log(input_line)])
+
+    def test_sample_lines(self):
+        input_lines = self.applines
+        r = app_log(input_lines)
+        res = [l for l in r]
+        eq_(31,len(res))
 
 ################################################################################
 from parsmap import apache_log
@@ -150,13 +179,59 @@ class test_field_map(BaseTest):
     def setUp(self):
         self.columns = ('a','b','c')
         self.fields = ('11','22','33')
-        self.d = {'a':'11','b':'22'}
+        self.d = dict(zip(self.columns,self.fields))
         def fake_func(param):
             return int(param)
         self.ff = fake_func
 
 
     def test_testing_test(self):
-        """testing if we can actually test this thing"""
-        d = field_map(self.d,'a',self.ff)
-        eq_({'a':11,'b':'22'}, d[0])
+        """
+        testing if we can actually test this thing
+        NOTE:
+            - we have to pass an iterator to field_map
+            - it will return a generator
+            - that we have to use to make the actual calls
+        """
+        # we call the function, passing a seq/list of dics, the field to map,
+        # and the func to use
+        self.d = field_map([self.d],'a',self.ff)
+        # then we convert the generator to a dic to get the content,
+        # and put it on another seq/list
+        resd = [(f)  for f in self.d]
+        # and then the assertion
+        eq_({'a':11,'b':'22','c':'33'}, resd[0])
+
+    @raises(Exception)
+    def test_that_raises(self):
+        """
+        we break how we break
+        """
+        def breaker(ignored):
+            print "Im not being called. why?"
+            raise Exception("bazinga")
+
+        d = field_map([self.d],'b',breaker)
+        [f for f in r] # if we dont use the generator, no call will be done
+
+    def test_field_map_passes_params(self):
+        mymock = mock.MagicMock(return_value="relol")
+        r = field_map([self.d],'b',mymock,"myparam")
+        [f for f in r] # if we dont use the generator, no call will be done
+        calls = [mock.call('22', 'myparam')]
+        #print "calls:",mymock.call_args_list
+        mymock.assert_has_calls(calls)
+        eq_(True, mymock.called)
+
+
+    @raises(Exception)
+    def test_field_map_side_effect(self):
+        """ testing what happends on side_effects"""
+        mymock = mock.MagicMock(return_value="relol",side_effect = Exception("kaboom"))
+        mymock.return_value="lol"
+        r = field_map([self.d],'b',mymock)
+        [f for f in r] # if we dont use the generator, no call will be done
+        eq_(True, mymock.called)
+
+
+################################################################################

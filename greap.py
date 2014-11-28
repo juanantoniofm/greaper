@@ -149,7 +149,7 @@ if __name__ == "__main__":
     import lib.parsmap as parsmap
     helpers.loglevel = loglevel
     parsmap.loglevel = loglevel
-    print "log level" + loglevel
+    print "GREAP log level: " + loglevel
 
     try:
         output(args.__str__(),"DEBUG",loglevel) # show the params for debug purposes
@@ -159,6 +159,7 @@ if __name__ == "__main__":
         log = get_producer(args["log_format"])(lines)
 
         broadcast(log, [query_print()])
+        print "foo"
 
     except ValueError as e:
         output("Are you sure you have choosen the proper logformat?", "ERROR")
@@ -167,5 +168,10 @@ if __name__ == "__main__":
 
     except Exception as e:
         output(e, "ERROR")
+        print "casque" # TODO: use logging library to log out errors
         sys.exit(1)
+    finally: #TODO:clear this hacky code and use logging, and proper handling
+        import traceback
+        traceback.print_exception( *sys.exc_info())
+        print e
 
