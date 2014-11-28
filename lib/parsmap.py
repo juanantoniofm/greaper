@@ -73,7 +73,8 @@ mpt = { # a table to define differences among log formats
                        #r'"(\S+) (\S+) (\S+)" (\S+) (\S+) (\S+) (\S+)'
             "column_names":('host','referrer','user','datetime', 'method',
                             'request','proto','status','bytes','from','useragent'),
-            "funcs":""},
+            "funcs":{"status":int,"bytes":lambda s: int(s) if s != '-' else 0},
+            "params":{}},
         "channel_manager": {
             "regex": r'(\w{3} \d{2} \d{2}:\d{2}:\d{2}) ' \
                       r'(app\w{4}\d{2}) ([a-z\-]*): ' \
@@ -81,51 +82,119 @@ mpt = { # a table to define differences among log formats
                       r'(\w*) *\[(.*?)\] (.*?) - (.*)',
             "column_names": ('logdate','machine','logfile','datetime','loglevel','tracing',
                               'jobtype','action'),
-            "funcs":""}#,
+            "funcs":""},
+        "cm_appserver":{
+            "regex": r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) ' \
+                      r'(\w*) *\[(.*?)\] (.*?) - (.*)',
+            "column_names": ('datetime','loglevel','tracing', 'jobtype','action'),
+            "funcs":""}
         #"little_hotelier": { "regex":"",
         #    "column_names":"",
         #    "funcs":""}
         }
 
 
-def list_fields():
+def list_fields(mpt = mpt):
     """make a nice list of the fields available for each kind of log"""
     help_line = ""
     for kind, v in mpt.iteritems():
         help_line += kind + ": " + mpt[kind]["column_names"].__str__() + ";"
-
     return help_line
 
 #logpat   = re.compile(logpats)
-logpat = re.compile(mpt["channel_manager"]["regex"])
+#logpat = re.compile(mpt["channel_manager"]["regex"])
 
 ################################################################################
+
+def generic_log(lines,colnames = None, converters = None, parameters = None):
+    """
+    generic function to parse log lines, based on a dic of field:conversor
+    """
+    assert colnames is not None
+    if converters is None:
+        converters = []
+    if  parameters is None:
+        parameters = []
+
+    logpat = re.compile(mpt[kind]["regex"])
+    groups = (logpat.match(line) for line in lines)
+    tuples = (g.groups() for g in groups if g)
+
+    log = (dict(zip(colnames,t)) for t in tuples)
+    try:
+        for colname in colnames:
+            # try to convert each field
+            try:
+                # we have to pass the params as a pointer to the list
+                log = field_map(log,colname,converters[colname],*parameters[colname])
+            except:
+                output("unparsed field {0}".format(colname),"DEBUG")
+    except:
+        #TODO: define what to do in case of massive failure
+        raise sys.exc_info[1], None, exc_info[2]
+    return log
+
+### def apache_log(lines,mpt=mpt):
+###     """
+###     wrapper to call generic log with the proper params
+###     """
+###     kind = "apache"
+###     return generic_log( lines,
+###                         mpt[kind]["column_names"],
+###                         mpt[kind]["funcs"],
+###                         mpt[kind]["params"]
+###                       )
 
 
 def app_log(lines):
     """
-    Parse an application log into a sequence of dicts
+    wrapper to call app log with params accordingly.
+    The idea behing this is being able to remove it in the near future
     """
-    groups = (logpat.match(line) for line in lines)
-    tuples = (g.groups() for g in groups if g)
+    kind = "channel_manager"
+    app_func = {"datetime":convert_time,
+                    "logdate":convert_time,
+                    "action":convert_xml
+                    }
+    # params have to be lists, so it can be properly referenced inside
+    app_params = {"datetime":["%Y-%m-%d %H:%M:%S,%f"],
+                    "logdate":["%b %d %H:%M:%S"],
+                    "action":[]
+                    }
+    return generic_log( lines,
+                        mpt[kind]["column_names"],
+# this are the final lists we should be calling. this is just a test. TODO: finish it
+#                          mpt[kind]["funcs"],
+#                          mpt[kind]["params"]
+                        app_func, app_params
+                      )
 
-    colnames = mpt["channel_manager"]["column_names"]
 
-    try:
-        log = (dict(zip(colnames,t)) for t in tuples)
-        log      = field_map(log,"datetime",convert_time,"%Y-%m-%d %H:%M:%S,%f")
-        log      = field_map(log,"logdate",convert_time,"%b %d %H:%M:%S")
-        log      = field_map(log,"action",convert_xml)
-    except Exception as e:
-        output("Are you sure you have chosen the application logformat?","INFO")
-        raise sys.exc_info[1], None, exc_info[2]
-
-    return log
-
+### def app_log(lines):
+###     """
+###     Parse an application log into a sequence of dicts
+###     """
+###     groups = (logpat.match(line) for line in lines)
+###     tuples = (g.groups() for g in groups if g)
+### 
+###     colnames = mpt["channel_manager"]["column_names"]
+### 
+###     try:
+###         log = (dict(zip(colnames,t)) for t in tuples)
+###         log      = field_map(log,"datetime",convert_time,"%Y-%m-%d %H:%M:%S,%f")
+###         log      = field_map(log,"logdate",convert_time,"%b %d %H:%M:%S")
+###         log      = field_map(log,"action",convert_xml)
+###     except Exception as e:
+###         output("Are you sure you have chosen the application logformat?","INFO")
+###         raise sys.exc_info[1], None, exc_info[2]
+### 
+###     return log
+### 
 
 def apache_log(lines):
     """Parse an apache log file into a sequence of dictionaries
     """
+    logpat = re.compile(mpt["apache"]["regex"])
     groups = (logpat.match(line) for line in lines)
     tuples = (g.groups() for g in groups if g)
     
