@@ -1,5 +1,6 @@
 import unittest
 from nose.tools import *
+import mock
 
 class BaseTest(unittest.TestCase):
     def setUp(self):
@@ -37,16 +38,26 @@ class test_output(BaseTest):
 
     def test_normal_goes_normal(self):
         """if no params, means normal msg"""
-        eq_ (output(self.msg),self.msg)
+ 
+    @mock.patch("helpers.enabled_level")
+    def test_exceptions(self,mymock):
+        """we log exceptions as trace"""
+        mymock.side_effect = Exception("kabooom!")
+        res = output("msg", "ERROR")
+        eq_(type(""),res)
+        eq_(True,mymock.called)
+            
 
     def test_exceptions(self):
         """we log exceptions as trace"""
-        #TODO: write a proper test to pass a exception to output
         try:
             raise Exception("faki faki faki")
         except Exception as e:
+            #TODO: write a proper test to verify exception logging
             res = output(e, "ERROR")
-            eq_("",res)
+            eq_(type(""),res)
+            eq_(True,mymock.called)
+            
 
     def test_none_input(self):
         """none input returns none"""
