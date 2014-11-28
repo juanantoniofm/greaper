@@ -21,13 +21,9 @@ so far, everything is built in.
 
 # Bugs, Improvements, etc
 
-- the code in the stats builder method should be cleaner and splitted
-- It would be better to use command line args to specify
-	- the logfile
-	- the level of detail reporting
-	- the addresses to send the email to
 - use proper regex in the grepit prefilter, instead of plain string matching
 - being able to cat/tail logs into the script.
+- be able to specify a `-f,--follow` param to behave like `tail -f`
 - multiple input files specified in the command line (that will trigger multiple producers, and follow some order)
 - if no query values are specified, but there is a -q flag, show the available fields
 - for cm sync logs, take the "Enqueue sync request <tokens>" and use a consumer to detect it, and print aditional tracking info for it.
