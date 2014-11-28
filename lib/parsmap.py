@@ -106,17 +106,18 @@ def list_fields(mpt = mpt):
 
 ################################################################################
 
-def generic_log(lines,colnames = None, converters = None, parameters = None):
+def generic_log(lines,regex = None, colnames = None, converters = None, parameters = None):
     """
     generic function to parse log lines, based on a dic of field:conversor
     """
+    assert regex is not None
     assert colnames is not None
     if converters is None:
         converters = []
     if  parameters is None:
         parameters = []
 
-    logpat = re.compile(mpt[kind]["regex"])
+    logpat = re.compile(regex)
     groups = (logpat.match(line) for line in lines)
     tuples = (g.groups() for g in groups if g)
 
@@ -162,6 +163,7 @@ def app_log(lines):
                     "action":[]
                     }
     return generic_log( lines,
+                        mpt[kind]["regex"],
                         mpt[kind]["column_names"],
 # this are the final lists we should be calling. this is just a test. TODO: finish it
 #                          mpt[kind]["funcs"],
