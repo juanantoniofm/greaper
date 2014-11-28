@@ -29,6 +29,7 @@ def output(msg = None, level=None,output_level="QUIET" ):
             if "DEBUG" in enabled_level(output_level):
                 print("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW") 
                 traceback.print_exception(*sys.exc_info())
+                return sys.exc_info().__str__()
         else:
             output_msg = output_msg.format(level,msg.__str__())
         print(output_msg, file=sys.stderr)

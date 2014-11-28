@@ -8,7 +8,6 @@ def add_entry(r=None,totalstatus=None):
     adds an entry to the results dictionary. 
     Initially focused at apache logs
     """
-    # TODO: this is not being GC properly, causing a memory leak.... sloppy...
     assert r is not None
     assert totalstatus is not None
     print "R:", r

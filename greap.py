@@ -64,6 +64,10 @@ def grepit(line, regex="", nregex = ""):
     :regex: expresion to validate the line
     :nregex: expresion to discard the line
     """
+    if regex is None:
+        regex = "" 
+    if nregex is None:
+        nregex  = ""
     if ((nregex is not "" ) and  (nregex in line)): 
         # if it matches neg regex, return nothing
         return ""
@@ -159,7 +163,6 @@ if __name__ == "__main__":
         log = get_producer(args["log_format"])(lines)
 
         broadcast(log, [query_print()])
-        print "foo"
 
     except ValueError as e:
         output("Are you sure you have choosen the proper logformat?", "ERROR")
@@ -168,10 +171,8 @@ if __name__ == "__main__":
 
     except Exception as e:
         output(e, "ERROR")
-        print "casque" # TODO: use logging library to log out errors
+        #print sys.exc_info() # TODO: clear it and use logging man
         sys.exit(1)
     finally: #TODO:clear this hacky code and use logging, and proper handling
         import traceback
         traceback.print_exception( *sys.exc_info())
-        print e
-
