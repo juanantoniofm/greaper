@@ -1,0 +1,7 @@
+10.0.10.196 - - [17/Nov/2014:12:22:46 +0000] "POST /integration-opera/services HTTP/1.1" 200 234 "-" "-"
+10.0.10.196 - - [17/Nov/2014:12:23:16 +0000] "GET /ws/fidelio HTTP/1.0" 405 1154 "-" "check_http/v1.4.15 (nagios-plugins 1.4.15)"
+223.207.147.137 - - [17/Nov/2014:16:14:19 +0000] "GET /web/static/b6LFBVUlRZIfecMz8fEoHJodaqZvj767fBZqGErgA9O.js HTTP/1.1" 200 41579 "https://www.channelrooms.com/web/extranet/hoteliers/11007/dashboard" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36" 9246
+223.207.147.137 - - [17/Nov/2014:16:14:22 +0000] "GET /web/userNotifications HTTP/1.1" 200 2 "https://www.channelrooms.com/web/extranet/hoteliers/11007/dashboard" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36" 9289
+223.207.147.137 - - [17/Nov/2014:16:14:34 +0000] "GET /web/logout?redirect=/login?wl=WebConnection HTTP/1.1" 302 - "https://www.channelrooms.com/web/extranet/hoteliers/11007/dashboard" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36" 1113
+107.22.254.30 - - [17/Nov/2014:16:48:16 +0000] "POST /pmsxchangev2/services/reztrip HTTP/1.1" 200 427 "-" "JAX-WS RI 2.1.6 in JDK 6" 22633
+87.230.75.44 - - [17/Nov/2014:16:48:16 +0000] "POST /pmsxchangev2/services/avvio HTTP/1.1" 200 345 "-" "Avvio pmsxchangev2 client" 70281
