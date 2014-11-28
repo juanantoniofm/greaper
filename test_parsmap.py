@@ -235,3 +235,30 @@ class test_field_map(BaseTest):
 
 
 ################################################################################
+from parsmap import generic_log
+
+class test_generic_log(BaseTest):
+    def setUp(self):
+        pass
+
+    def test_is_ok(self):
+        eq_(None, generic_log([{"fake":"value"}],["fake"],{"fake":lambda x: x},{"fake":"param?"}))
+
+    def test_empty_params(self):
+        eq_(None, generic_log([{"fake":"value"}],["fake"],{"fake":lambda x: x}))
+
+    def test_empty_funcs(self):
+        eq_(None, generic_log([{"fake":"value"}],["fake"]))
+
+    @raises(AssertionError)
+    def test_empty_colnames_raises(self):
+        eq_(None, generic_log([{"fake":"value"}]))
+
+################################################################################
+from parsmap import list_fields
+
+class test_list_fields(BaseTest):
+    def test_normal_input(self):
+        d = {"kind":{"field1":"foo"}}
+        res = list_fields(d)
+        eq_(type(""),type(res))
