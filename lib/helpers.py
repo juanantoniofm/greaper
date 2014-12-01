@@ -20,8 +20,8 @@ def normal_output(msg=None):
     performed, results, etc. 
     Not the information related to the inner workings of the application
     """
-    print("FFFFFFFFFFFFFFFFFFFFFFFFFFF" ,file=sys.stderr)
-    raise TypeError("when called")
+    #print("FFFFFFFFFFFFFFFFFFFFFFFFFFF" ,file=sys.stderr)
+    #raise TypeError("when called")
     if msg == None:
         print("")
         return ""
@@ -37,7 +37,7 @@ def output(msg, loglevel="OUTPUT", deprecated_param = None):
     :loglevel: the loglevel to which the msg belongs
     :deprecated_param: just that. a deprecated param that will be removed soon from the callers
     """
-    print ("FFFFFFXXXXXXXXXXXFFFFFFFFFF {0};; {1};; {2};;\n".format(loglevel, msg, deprecated_param))
+    #print ("FFFFFFXXXXXXXXXXXFFFFFFFFFF {0};; {1};; {2};;\n".format(loglevel, msg, deprecated_param))
     # to imitate a switch/case behaviour, we use a hashmap:
     levels = {
             "DEBUG":logging.debug,
@@ -45,8 +45,8 @@ def output(msg, loglevel="OUTPUT", deprecated_param = None):
             "ERROR": logging.error,
             "INFO": logging.debug,
             "EXC": logging.exception,
-            #"OUTPUT":normal_output
-            "OUTPUT":logging.info
+            "OUTPUT":normal_output
+            #"OUTPUT":logging.info
             }
     levels[loglevel](msg)
     return "GREAP {0} {1}".format(loglevel,msg)
