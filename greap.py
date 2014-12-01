@@ -97,7 +97,7 @@ def read_in_lines(fh = None):
                 # check that the line matches with the pre-regex and if not, break
                 yield ""
             else:
-                output(line, "DEBUG",loglevel) # print debug info
+                output("readinlines {0}".format(line), "DEBUG",loglevel) # print debug info
                 yield line
  
 ################################################################################
@@ -124,9 +124,11 @@ def compose(query, data=None):
     :return: the line to print with the fields in the order specified in query."""
     rl = " "
     #- first figure out which fields to print. either all of just queried ones.
+    print "fiaoeu aasoeturalocehurasoetnuraeo compose"
+    output("entering compose","INFO")
     if query is None:
         queried_fields = [x for x in data.iterkeys()]
-        output("{0}".format(queried_fields.__str__()), "OUTPUT")
+        output("DEFQUERY {0}".format(queried_fields.__str__()), "OUTPUT")
     else:
         queried_fields = query.split(",")
     #- then go and create the line
@@ -144,7 +146,7 @@ def compose(query, data=None):
 def query_print():
     while True:
         r=(yield)
-        output(compose(args["query"], r))
+        output(compose(args["query"], r),"OUTPUT")
 
 
 ################################################################################
@@ -160,10 +162,11 @@ if __name__ == "__main__":
 
     try:
         output(args.__str__(),"DEBUG",loglevel) # show the params for debug purposes
-        define_loglevel()
+        #define_loglevel()  #DEPRECATED
         lines = read_in_lines(open(args["input_file"],"r"))
 
-        log = get_producer(args["log_format"])(lines)
+        producer =  get_producer(args["log_format"])
+        log = producer(lines)
 
         broadcast(log, [query_print()])
 
@@ -173,9 +176,6 @@ if __name__ == "__main__":
         sys.exit(1)
 
     except Exception as e:
-        output(e, "ERROR")
-        #print sys.exc_info() # TODO: clear it and use logging man
+        output(e, "EXC")
+        output("We are dead", "ERROR")
         sys.exit(1)
-    finally: #TODO:clear this hacky code and use logging, and proper handling
-        import traceback
-        traceback.print_exception( *sys.exc_info())
