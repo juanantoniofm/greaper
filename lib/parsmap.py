@@ -61,6 +61,7 @@ def field_map(dictseq, name, func,*args):
     """
     for d in dictseq:
         d[name] = func(d[name],*args)
+        print "       field mapping      "
         yield d
 
 
@@ -120,16 +121,19 @@ def generic_log(lines,regex = None, colnames = None, converters = None, paramete
 
     log = (dict(zip(colnames,t)) for t in tuples)
     try:
-        for colname in colnames:
+        for colname in converters:
             # try to convert each field
             try:
                 # we have to pass the params as a pointer to the list
                 log = field_map(log,colname,converters[colname],*parameters[colname])
             except:
                 output("unparsed field {0}".format(colname),"DEBUG")
-    except:
+            output( "GENERIC LOG","DEBUG")
+            output([x for x in log],"DEBUG")
+    except Exception as e:
         #TODO: define what to do in case of massive failure
-        output("failure parsing lines {0}".format(lines))
+        output("failure parsing lines {0}".format(lines),"DEBUG") # verborreic output
+        output(e,"EXC")
         raise sys.exc_info[1], None, exc_info[2]
     return log
 
@@ -145,7 +149,7 @@ def generic_log(lines,regex = None, colnames = None, converters = None, paramete
 ###                       )
 
 
-def channel_manager_log(lines):
+def new_channel_manager_log(lines):
     """
     wrapper to call app log with params accordingly.
     The idea behing this is being able to remove it in the near future
@@ -170,29 +174,32 @@ def channel_manager_log(lines):
                       )
 
 
-### def channel_manager_log(lines):
-###     """
-###     Parse an application log into a sequence of dicts
-###     """
-###     groups = (logpat.match(line) for line in lines)
-###     tuples = (g.groups() for g in groups if g)
-### 
-###     colnames = mpt["channel_manager"]["column_names"]
-### 
-###     try:
-###         log = (dict(zip(colnames,t)) for t in tuples)
-###         log      = field_map(log,"datetime",convert_time,"%Y-%m-%d %H:%M:%S,%f")
-###         log      = field_map(log,"logdate",convert_time,"%b %d %H:%M:%S")
-###         log      = field_map(log,"action",convert_xml)
-###     except Exception as e:
-###         output("Are you sure you have chosen the application logformat?","INFO")
-###         raise sys.exc_info[1], None, exc_info[2]
-### 
-###     return log
-### 
+def channel_manager_log(lines):
+    """
+    Parse an application log into a sequence of dicts
+    """
+    logpat = re.compile(mpt["channel_manager"]["regex"])
+    groups = (logpat.match(line) for line in lines)
+    tuples = (g.groups() for g in groups if g)
+
+    colnames = mpt["channel_manager"]["column_names"]
+
+    try:
+        log = (dict(zip(colnames,t)) for t in tuples)
+        log      = field_map(log,"datetime",convert_time,"%Y-%m-%d %H:%M:%S,%f")
+        log      = field_map(log,"logdate",convert_time,"%b %d %H:%M:%S")
+        log      = field_map(log,"action",convert_xml)
+    except Exception as e:
+        output("Are you sure you have chosen the application logformat?","INFO")
+        raise sys.exc_info[1], None, exc_info[2]
+
+    return log
+
 
 def apache_log(lines):
-    """Parse an apache log file into a sequence of dictionaries
+    """
+    Parse an apache log file into a sequence of dictionaries.
+    Old fashioned method to be deprecated
     """
     logpat = re.compile(mpt["apache"]["regex"])
     groups = (logpat.match(line) for line in lines)
