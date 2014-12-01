@@ -130,6 +130,9 @@ def compose(query, data=None):
     else:
         queried_fields = query.split(",")
     #- then go and create the line
+    if data is None:
+        output("Nothing passed to compose","DEBUG")
+        return ""
     for f in queried_fields:
         rl += data[f].__str__() + " "
     return rl
@@ -141,8 +144,7 @@ def compose(query, data=None):
 def query_print():
     while True:
         r=(yield)
-        output("{0}".format(compose(args["query"]),
-            r))
+        output(compose(args["query"], r))
 
 
 ################################################################################
