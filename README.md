@@ -28,6 +28,7 @@ so far, everything is built in.
 - if no query values are specified, but there is a -q flag, show the available fields
 - for cm sync logs, take the "Enqueue sync request <tokens>" and use a consumer to detect it, and print aditional tracking info for it.
 - be able to specify a format string instead of a simple list of fields
+- include more than one -g or -ng in the same command line
 
 
 ## Proposed use cases:
