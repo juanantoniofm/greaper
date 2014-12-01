@@ -117,26 +117,27 @@ def generic_log(lines,regex = None, colnames = None, converters = None, paramete
 
     logpat = re.compile(regex)
     groups = (logpat.match(line) for line in lines)
-    if len([x for x in groups]) < len(colnames):
+    mygroups = [x for x in groups]
+    if len(mygroups) < len(colnames):
         raise ValueError("regex not matching well")
-    tuples = (g.groups() for g in groups if g)
+    tuples = (g.groups() for g in mygroups if g)
 
     log = (dict(zip(colnames,t)) for t in tuples)
-    try:
-        for colname in converters:
-            # try to convert each field
-            try:
-                # we have to pass the params as a pointer to the list
-                log = field_map(log,colname,converters[colname],*parameters[colname])
-            except TypeError:
-                output("unparsed field {0}".format(colname),"DEBUG")
-            output( "GENERIC LOG","DEBUG")
-            output([x for x in log],"DEBUG")
-    except (TypeError) as e:
-        #TODO: define what to do in case of massive failure
-        output("failure parsing lines {0}".format(lines),"DEBUG") # verborreic output
-        output(e,"EXC")
-        raise sys.exc_info[1], None, exc_info[2]
+    #try:
+    #    for colname in converters:
+    #        # try to convert each field
+    #        try:
+    #            # we have to pass the params as a pointer to the list
+    #            log = field_map(log,colname,converters[colname],*parameters[colname])
+    #        except TypeError:
+    #            output("unparsed field {0}".format(colname),"DEBUG")
+    #        output( "GENERIC LOG","DEBUG")
+    #        output([x for x in log],"DEBUG")
+    #except (TypeError) as e:
+    #    #TODO: define what to do in case of massive failure
+    #    output("failure parsing lines {0}".format(lines),"DEBUG") # verborreic output
+    #    output(e,"EXC")
+    #    raise sys.exc_info[1], None, exc_info[2]
     return log
 
 ### def apache_log(lines,mpt=mpt):
@@ -150,6 +151,9 @@ def generic_log(lines,regex = None, colnames = None, converters = None, paramete
 ###                         mpt[kind]["params"]
 ###                       )
 
+
+def channel_manager_log(lines):
+    new_channel_manager_log(lines) # TODO: please delete this method
 
 def new_channel_manager_log(lines):
     """
@@ -166,7 +170,7 @@ def new_channel_manager_log(lines):
                     "logdate":["%b %d %H:%M:%S"],
                     "action":[]
                     }
-    return generic_log( lines,
+    processed =  generic_log( lines,
                         mpt[kind]["regex"],
                         mpt[kind]["column_names"],
 # this are the final lists we should be calling. this is just a test. TODO: finish it
@@ -174,9 +178,11 @@ def new_channel_manager_log(lines):
 #                          mpt[kind]["params"]
                         app_func, app_params
                       )
+    output("TEST: {0}".format([x for x in processed]),"OUTPUT")
+    return [x for x in processed]
 
 
-def channel_manager_log(lines):
+def old_channel_manager_log(lines):
     """
     Parse an application log into a sequence of dicts
     """
@@ -256,11 +262,10 @@ def get_producer(logkind):
     """
     returns a callable to the proper log producer
     """
-    global loglevel
     try: 
         lk = producers[logkind]
     except:  # then we fallback to default
-        output("no producer found for: {0}".format(logkind), "DEBUG",loglevel)
+        output("no producer found for: {0}".format(logkind), "DEBUG")
         output("falling back to default log kind: {0}".format(channel_manager_log), "WARNING")
         lk = channel_manager_log # by default
 
