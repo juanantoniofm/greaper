@@ -117,6 +117,8 @@ def generic_log(lines,regex = None, colnames = None, converters = None, paramete
 
     logpat = re.compile(regex)
     groups = (logpat.match(line) for line in lines)
+    if len([x for x in groups]) < len(colnames):
+        raise ValueError("regex not matching well")
     tuples = (g.groups() for g in groups if g)
 
     log = (dict(zip(colnames,t)) for t in tuples)
@@ -126,11 +128,11 @@ def generic_log(lines,regex = None, colnames = None, converters = None, paramete
             try:
                 # we have to pass the params as a pointer to the list
                 log = field_map(log,colname,converters[colname],*parameters[colname])
-            except:
+            except TypeError:
                 output("unparsed field {0}".format(colname),"DEBUG")
             output( "GENERIC LOG","DEBUG")
             output([x for x in log],"DEBUG")
-    except Exception as e:
+    except (TypeError) as e:
         #TODO: define what to do in case of massive failure
         output("failure parsing lines {0}".format(lines),"DEBUG") # verborreic output
         output(e,"EXC")
@@ -189,7 +191,7 @@ def channel_manager_log(lines):
         log      = field_map(log,"datetime",convert_time,"%Y-%m-%d %H:%M:%S,%f")
         log      = field_map(log,"logdate",convert_time,"%b %d %H:%M:%S")
         log      = field_map(log,"action",convert_xml)
-    except Exception as e:
+    except TypeError as e:
         output("Are you sure you have chosen the application logformat?","INFO")
         raise sys.exc_info[1], None, exc_info[2]
 
@@ -212,7 +214,7 @@ def apache_log(lines):
         log      = field_map(log,"status",int)
         log      = field_map(log,"bytes",
                              lambda s: int(s) if s != '-' else 0)
-    except:
+    except TypeError:
         print ("""barrrr""")
         output("Are you sure you have chosen the apache logformat?","INFO")
         raise sys.exc_info[1], None, exc_info[2]
@@ -246,7 +248,8 @@ def define_logkind():
 
 producers = {
         "apache": apache_log,
-        "channel_manager": channel_manager_log
+        "channel_manager": channel_manager_log,
+        "new_channel_manager": new_channel_manager_log
         }
 
 def get_producer(logkind):
@@ -256,7 +259,7 @@ def get_producer(logkind):
     global loglevel
     try: 
         lk = producers[logkind]
-    except:
+    except:  # then we fallback to default
         output("no producer found for: {0}".format(logkind), "DEBUG",loglevel)
         output("falling back to default log kind: {0}".format(channel_manager_log), "WARNING")
         lk = channel_manager_log # by default
