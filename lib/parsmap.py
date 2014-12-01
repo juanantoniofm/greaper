@@ -88,9 +88,6 @@ mpt = { # a table to define differences among log formats
                       r'(\w*) *\[(.*?)\] (.*?) - (.*)',
             "column_names": ('datetime','loglevel','tracing', 'jobtype','action'),
             "funcs":""}
-        #"little_hotelier": { "regex":"",
-        #    "column_names":"",
-        #    "funcs":""}
         }
 
 
@@ -239,17 +236,19 @@ def define_logkind():
         # user defined, so check if is valid
         return validate_logkind(args["log_format"])
 
+producers = {
+        "apache": apache_log,
+        "channel_manager": app_log
+        }
 
 def get_producer(logkind):
-    producers = {
-            "apache": apache_log,
-            "channel_manager": app_log
-            }
-    lk = apache_log # by default
+    """
+    returns a callable to the proper log producer
+    """
+    lk = app_log # by default
     global loglevel
     try: 
         lk = producers[logkind]
     except:
         output("no producer found for: {0}".format(logkind), "DEBUG",loglevel)
-    #return mpt[logkind]["producer"] #based on master dict. not working, circular dep
     return lk
