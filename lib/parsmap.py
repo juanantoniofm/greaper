@@ -178,8 +178,7 @@ def new_channel_manager_log(lines):
 #                          mpt[kind]["params"]
                         app_func, app_params
                       )
-    output("TEST: {0}".format([x for x in processed]),"OUTPUT")
-    return [x for x in processed]
+    return processed
 
 
 def old_channel_manager_log(lines):
