@@ -4,7 +4,7 @@
 import argparse
 import sys
 
-from lib.parsmap import apache_log, field_map, consumer, convert_time, app_log
+from lib.parsmap import field_map, consumer, convert_time
 from lib.parsmap import mpt,list_fields,  broadcast, get_producer,producers
 from lib.helpers import output 
 import myfilters 
