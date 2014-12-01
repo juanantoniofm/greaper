@@ -18,14 +18,7 @@ class test_output(BaseTest):
         """a debug message goes printed in debug level"""
         assert output(self.msg) is not None
 
-    def test_debug_on_info(self):
-        """ we dont print debug msgs on info level"""
-        assert output(self.msg, "DEBUG","INFO") is None
-
-    def test_info_on_debug(self):
-        """ we print info mesg on debug lev"""
-        assert output(self.msg,"INFO","DEBUG") is not None
-
+    @raises(TypeEror)
     def test_void_msg(self):
         """nothing breaks in null message"""
         assert output(None) is None
@@ -38,6 +31,11 @@ class test_output(BaseTest):
 
     def test_normal_goes_normal(self):
         """if no params, means normal msg"""
+        eq_(self.msg, output(self.msg,"OUTPUT"))
+ 
+    def test_no_level_goes_normal(self):
+        """if no params, means normal msg"""
+        eq_(self.msg, output(self.msg))
  
     @mock.patch("helpers.enabled_level")
     def test_exceptions(self,mymock):
@@ -55,7 +53,8 @@ class test_output(BaseTest):
         except Exception as e:
             #TODO: write a proper test to verify exception logging
             res = output(e, "ERROR")
-            eq_(type(""),res)
+            eq_(type(""),type(res))
+            eq_("GREAP ERROR faki faki faki",res)
             eq_(True,mymock.called)
             
 
