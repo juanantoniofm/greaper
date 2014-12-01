@@ -97,7 +97,7 @@ def read_in_lines(fh = None):
                 # check that the line matches with the pre-regex and if not, break
                 yield ""
             else:
-                output("readinlines {0}".format(line), "DEBUG",loglevel) # print debug info
+                #output("readinlines {0}".format(line), "DEBUG",loglevel) # print debug info
                 yield line
  
 ################################################################################
