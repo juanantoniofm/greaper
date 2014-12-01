@@ -129,6 +129,7 @@ def generic_log(lines,regex = None, colnames = None, converters = None, paramete
                 output("unparsed field {0}".format(colname),"DEBUG")
     except:
         #TODO: define what to do in case of massive failure
+        output("failure parsing lines {0}".format(lines))
         raise sys.exc_info[1], None, exc_info[2]
     return log
 
@@ -144,7 +145,7 @@ def generic_log(lines,regex = None, colnames = None, converters = None, paramete
 ###                       )
 
 
-def app_log(lines):
+def channel_manager_log(lines):
     """
     wrapper to call app log with params accordingly.
     The idea behing this is being able to remove it in the near future
@@ -169,7 +170,7 @@ def app_log(lines):
                       )
 
 
-### def app_log(lines):
+### def channel_manager_log(lines):
 ###     """
 ###     Parse an application log into a sequence of dicts
 ###     """
@@ -238,17 +239,19 @@ def define_logkind():
 
 producers = {
         "apache": apache_log,
-        "channel_manager": app_log
+        "channel_manager": channel_manager_log
         }
 
 def get_producer(logkind):
     """
     returns a callable to the proper log producer
     """
-    lk = app_log # by default
     global loglevel
     try: 
         lk = producers[logkind]
     except:
         output("no producer found for: {0}".format(logkind), "DEBUG",loglevel)
+        output("falling back to default log kind: {0}".format(channel_manager_log), "WARNING")
+        lk = channel_manager_log # by default
+
     return lk
