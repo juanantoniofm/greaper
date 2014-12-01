@@ -5,7 +5,7 @@ import argparse
 import sys
 
 from lib.parsmap import apache_log, field_map, consumer, convert_time, app_log
-from lib.parsmap import mpt,list_fields,  broadcast, get_producer
+from lib.parsmap import mpt,list_fields,  broadcast, get_producer,producers
 from lib.helpers import output 
 import myfilters 
 
@@ -32,7 +32,7 @@ command_parser.add_argument("-i","--input", dest="input_file",
 
 command_parser.add_argument("-k","--kind", dest="log_format",
         help="Define which kind of log to parse (available: {0})".format(
-            ", ".join(mpt.iterkeys())),
+            ", ".join(producers.iterkeys())),
         required=False)
 
 command_parser.add_argument("-g","--grep", dest="grep_regex",
@@ -126,7 +126,7 @@ def compose(query, data=None):
     #- first figure out which fields to print. either all of just queried ones.
     if query is None:
         queried_fields = [x for x in data.iterkeys()]
-        output(queried_fields.__str__(),"DEBUG",loglevel)
+        output("{0}".format(queried_fields.__str__()), "OUTPUT")
     else:
         queried_fields = query.split(",")
     #- then go and create the line
@@ -141,7 +141,8 @@ def compose(query, data=None):
 def query_print():
     while True:
         r=(yield)
-        output(compose(args["query"], r))
+        output("{0}".format(compose(args["query"]),
+            r))
 
 
 ################################################################################

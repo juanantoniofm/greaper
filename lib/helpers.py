@@ -45,6 +45,7 @@ def output(msg, loglevel="OUTPUT", deprecated_param = None):
             }
     try:
         levels[loglevel](msg)
+        return "GREAP {0} {1}".format(loglevel,msg)
     except:
         logging.error("Log level not found: {0}".format(loglevel))
         logging.error("logging: ",msg)
