@@ -1,37 +1,50 @@
 
+""" Module to host some helper function, mainly related to logging and printing"""
+
+
 from __future__ import print_function
 import sys
-import traceback
+import logging
 
-def enabled_level(output_level):
-    if output_level is None:
-        raise ValueError("No proper log level enabled")
-    loglevels = "DEBUG WARNING INFO ERROR QUIET"
-    return loglevels[loglevels.find(output_level):]
+# configure logging
+logging.basicConfig(
+        stream=sys.stderr,
+        level=logging.INFO,
+        format="GREAP %(levelname)s %(message)s")
+#TODO:configure it from settings and command line
 
 
-
-def output(msg = None, level=None,output_level="QUIET" ):
-    """shows or not a message, depending on the level of output selected.
-    level > level of the current message to send
-    output_level > level of the logging detail desired"""
+def normal_output(msg=None):
+    """
+    prints normal output of the program, that is, the results of the query 
+    performed, results, etc. 
+    Not the information related to the inner workings of the application
+    """
     if msg == None:
-        return None  # nothing to do here
-    if level == None:
-        # regular message then
-        print (msg)
-        return msg
-    # If there is any kind of loglevel, means app message
-    if level in enabled_level(output_level):
-        output_msg = "GREAP [{0}] {1}"
-        if type(msg) is not type(""):
-            output_msg = output_msg.format(level,msg.__str__())
-            if "DEBUG" in enabled_level(output_level):
-                print("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW") 
-                traceback.print_exception(*sys.exc_info())
-                return sys.exc_info().__str__()
-        else:
-            output_msg = output_msg.format(level,msg.__str__())
-        print(output_msg, file=sys.stderr)
-        return output_msg
+        print("")
+        return ""
+    print(msg)
+    return(msg)
 
+
+def output(msg, loglevel="OUTPUT", deprecated_param = None):
+    """
+    New output function. 
+    It uses the logging module to control everything
+    :msg: the actuall message to print 
+    :loglevel: the loglevel to which the msg belongs
+    :deprecated_param: just that. a deprecated param that will be removed soon from the callers
+    """
+    # to imitate a switch/case behaviour, we use a hashmap:
+    levels = {
+            "DEBUG":logging.debug,
+            "WARNING": logging.warning,
+            "ERROR": logging.error,
+            "INFO": logging.info,
+            "OUTPUT":normal_output
+            }
+    try:
+        levels[loglevel](msg)
+    except:
+        logging.error("Log level not found: {0}".format(loglevel))
+        logging.error("logging: ",msg)
