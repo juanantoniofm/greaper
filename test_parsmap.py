@@ -48,41 +48,11 @@ class test_convert_time(BaseTest):
 
 
 ################################################################################
-from parsmap import  validate_logkind
+#from parsmap import channel_manager_log
+import parsmap
 
-class test_validate_logkind(BaseTest):
-    def setUp(self):
-        self.logkinds = ["apache", "whatever"]
-
-    @raises(LookupError)
-    def test_empty_list(self):
-        """If we pass empty logkind list, break"""
-        validate_logkind("apache", [])
-
-    @raises( LookupError )
-    def test_empty_logkind(self):
-        """If we pass empty logkind, wat?"""
-        validate_logkind("",[])
-
-    @raises( LookupError )
-    def test_none_logkind(self):
-        validate_logkind(None,[])
-
-    def test_normal_logking(self):
-        """all works normal"""
-        eq_(True, validate_logkind("apache",self.logkinds))
-
-    @raises( LookupError )
-    def test_not_in_list(self):
-        """If the logkind is not in the list, break"""
-        eq_(True, validate_logkind("apache",["foo"]))
-
-
-################################################################################
-from parsmap import channel_manager_log
-
-class test_app_log(BaseTest):
-    """app_log need lines to be fed.
+class test_channel_manager_log(BaseTest):
+    """channel_manager_log need lines to be fed.
     just a list of  strings
     """
     def setUp(self):
@@ -91,60 +61,83 @@ class test_app_log(BaseTest):
         with open("sample.app.log","r") as f:
             self.applines = f.readlines()
 
-    @mock.patch('parsmap.conversors.convert_time')
+        self.ap2lines=""
+        with open("sample.ap2.log","r") as f:
+            self.ap2lines= f.readlines()
+
+    #@mock.patch('parsmap.conversors.convert_time') # no module conversors
+    @mock.patch('conversors.convert_time')
     def test_convert_time_error(self,mymock):
         mymock.side_effect=ValueError("bazinga!")
-        r = app_log(self.applines)
-        calling = [l for l in r]
+        result = parsmap.channel_manager_log(self.applines)
+        calling = [l for l in result]
         eq_(True,mymock.called)
 
     @mock.patch('conversors.convert_xml')
+    # @raises(ValueError) # it shouldn't raise here, but inside the conversor
     def test_xml_fail(self,mymock):
         mymock.side_effect=ValueError("bazinga!")
         mymock.return_value="bazinga!"
-        r = app_log(["Nov 25 16:34:00 appukcm03 cm-dsync-client-app: 2014-11-25 16:34:00,132 INFO  [jobScheduler_Worker-2: ] SyncJob.vcl - Job winding down..."])
-        calling = [l for l in r]
+        result = parsmap.channel_manager_log(["Nov 25 16:34:00 appukcm03 cm-dsync-client-app: 2014-11-25 16:34:00,132 INFO  [jobScheduler_Worker-2: ] SyncJob.vcl - Job winding down..."])
+        calling = [l for l in result]
         eq_([{'loglevel': 'INFO', 'tracing': 'jobScheduler_Worker-2: ', 'datetime': '16:34', 'machine': 'appukcm03', 'logdate': '16:34', 'action': 'Job winding down...', 'logfile': 'cm-dsync-client-app', 'jobtype': 'SyncJob.vcl'}],calling)
-        eq_(True,mymock.called)
+        #eq_(True,mymock.called)
+
+    def test_empty_lines_list(self):
+        """on empty list, raise"""
+        input_line = []
+        assert_raises(ValueError,parsmap.channel_manager_log, input_line)   
 
     def test_empty_lines(self):
-        input_line = []
-        assert_raises(ValueError,app_log, input_line)   
+        """on empty lines, return nothing"""
+        input_line = ["",""]
+        result = parsmap.channel_manager_log( input_line)  
+        eq_([],[x for x in result])
 
     def test_wrong_line(self):
-        input_line = "bau asetao euas uabsoeutaneusan uasoe tu asoeuta "
-        assert_raises(ValueError,app_log, [input_line])   
-        assert type(app_log(input_line)) is type(dict())
+        input_line = "bau 131312     euas uabsoeutaneusan uasoe tu asoeuta "
+        assert_raises(ValueError,parsmap.channel_manager_log, input_line.split())   
 
+    @raises(ValueError)
     def test_wtf(self):
         input_line = "wtf"
-        eq_([],[ f for f in  app_log(input_line)])
+        eq_([],[ f for f in  parsmap.channel_manager_log(input_line)])
 
     def test_sample_lines(self):
         input_lines = self.applines
-        r = app_log(input_lines)
-        res = [l for l in r]
-        eq_(31,len(res))
+        r = parsmap.channel_manager_log(input_lines)
+        result = [l for l in r]
+        eq_(31,len(result))
+
+    def test_sample_lines2(self):
+        input_lines = self.ap2lines
+        r = parsmap.channel_manager_log(input_lines)
+        result = [l for l in r]
+        eq_(31,len(result))
 
 ################################################################################
 from parsmap import apache_log
 
 class test_apache_log(BaseTest):
     def setUp(self):
-        pass
+        self.apachelines = ""
+        with open("sample.apache.log","r") as f:
+            self.apachelines = f.readlines()
 
-    def test_empty_lines(self):
+    def test_empty_lines_list(self):
+        """on empty list of lines, raise"""
         input_line = []
         assert_raises(ValueError,apache_log, input_line)   
 
+    def test_empty_lines(self):
+        """on empty lines, don't raise"""
+        input_lines = ["",""]
+        result = apache_log(input_lines)
+        eq_([], [x for x in result])
+
     def test_wrong_line(self):
         input_line = "bau asetao euas uabsoeutaneusan uasoe tu asoeuta "
-        assert_raises(ValueError,apache_log, input_line)   
-        assert type(apache_log(input_line)) is type(dict())
-
-    def test_wtf(self):
-        input_line = "wtf"
-        eq_([],[ f for f in  apache_log(input_line)])
+        assert_raises(ValueError,apache_log, input_line.split(" "))   
 
 ################################################################################
 from parsmap import  field_map
@@ -215,24 +208,47 @@ class test_generic_log(BaseTest):
     def setUp(self):
         pass
 
+
     def test_is_ok(self):
         """test that at least works ok"""
         input_string = """fooo
-barrr
-baazzzz"""
-        lista = input_string.split("\n")
+                            barrr
+                        baazzzz"""
         result = generic_log(
                     input_string.split("\n"),
-                    r"(.*)", # regex
+                    r" *(.*)", # regex
                     ["fake"],  # colnames
-                    {"fake":lambda x: x},  # converters
-                    {"fake":"param?"}  # parameters
+                    {"fake": lambda x: x},  # converters
+                    {}  # parameters
                     )
 
 
         eq_([{"fake":"fooo"},{"fake":"barrr"},{"fake":"baazzzz"}], 
                 [ x for x in result]
             )
+
+
+    def test_one_fails_isolated(self):
+        """test that if one conversor fails, not all do"""
+        input_string = """fo 111 baz
+foo 222 baazz
+fooo 333 baaazzz"""
+        lista = input_string.split("\n")
+        result = generic_log(
+                    input_string.split("\n"),
+                    r"(.*) (.*) (.*)", # regex
+                    ["fo","bar","baz"],  # colnames
+                    {"fo":lambda x: x + "!!", "bar": lambda x: int(x)},  # converters
+                    {"fake":"param?"}  # parameters
+                    )
+
+        expected = [
+                {"fo":"fo!!","bar":111,"baz":"baz"},
+                {"fo":"foo!!","bar":222,"baz":"baazz"},
+                {"fo":"fooo!!","bar":333,"baz":"baaazzz"}
+                ]
+
+        eq_(expected, [ x for x in result])
 
 
     @nottest
@@ -252,6 +268,6 @@ from parsmap import list_fields
 
 class test_list_fields(BaseTest):
     def test_normal_input(self):
-        d = {"kind":{"field1":"foo"}}
+        d = {"kind":{"column_names":"foo"}}
         res = list_fields(d)
         eq_(type(""),type(res))
