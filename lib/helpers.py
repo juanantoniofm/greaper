@@ -9,7 +9,7 @@ import logging
 # configure logging
 logging.basicConfig(
         stream=sys.stderr,
-        level=logging.ERROR,
+        level=logging.DEBUG,
         format="GREAP %(levelname)s %(message)s")
 #TODO:configure it from settings and command line
 
