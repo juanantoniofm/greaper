@@ -147,32 +147,6 @@ class test_apache_log(BaseTest):
         eq_([],[ f for f in  apache_log(input_line)])
 
 ################################################################################
-from parsmap import define_logkind
-
-args = {"log_format": ""}
-
-class test_define_logkind(BaseTest):
-    def setUp(self):
-        global args
-        args = {}
-
-    def test_no_format_defined_fall_to_apache(self):
-        global args
-        args["log_format"] = ""
-        eq_("apache", define_logkind())
-
-    def test_normal_format_recognised(self):
-        global args
-        args["log_format"] = "channel_manager"
-        eq_("channel_manager", define_logkind())
-
-    def test_unknown_format_not_recognised(self):
-        global args
-        args["log_format"] = "NOTVALID"
-        eq_("apache", define_logkind())
-
-
-################################################################################
 from parsmap import  field_map
 
 class test_field_map(BaseTest):
@@ -242,11 +216,30 @@ class test_generic_log(BaseTest):
         pass
 
     def test_is_ok(self):
-        eq_(None, generic_log([{"fake":"value"}],["fake"],{"fake":lambda x: x},{"fake":"param?"}))
+        """test that at least works ok"""
+        input_string = """fooo
+barrr
+baazzzz"""
+        lista = input_string.split("\n")
+        result = generic_log(
+                    input_string.split("\n"),
+                    r"(.*)", # regex
+                    ["fake"],  # colnames
+                    {"fake":lambda x: x},  # converters
+                    {"fake":"param?"}  # parameters
+                    )
 
+
+        eq_([{"fake":"fooo"},{"fake":"barrr"},{"fake":"baazzzz"}], 
+                [ x for x in result]
+            )
+
+
+    @nottest
     def test_empty_params(self):
         eq_(None, generic_log([{"fake":"value"}],["fake"],{"fake":lambda x: x}))
 
+    @raises(AssertionError)
     def test_empty_funcs(self):
         eq_(None, generic_log([{"fake":"value"}],["fake"]))
 
