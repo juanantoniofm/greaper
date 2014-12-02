@@ -95,6 +95,7 @@ def matchit(regob, line, validation_fields = None):
                 raise ValueError("number of regex matches not valid")
         except:
             output("regob: {0}".format(type(regob)), "DEBUG")
+            output("pattern: {0}".format(regob.pattern), "DEBUG")
             output("line: {0}".format(line), "DEBUG")
             output("validation: {0}".format(len(validation_fields)), "DEBUG")
             output("matches: {0}".format(type(matched)), "DEBUG")
