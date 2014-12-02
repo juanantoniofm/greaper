@@ -3,8 +3,11 @@
 echo "----------- apache no kind"
 ./greap -i sample.apache.log  -q host,referrer,user,datetime,method,request,proto,status,bytes,from,useragent  | tail -n 5
 
+echo "----------- apache w query"
+./greap -i sample.apache.log  -k apache -q host,referrer,user,datetime,method,request,proto,status,bytes,from,useragent  | tail -n 5
+
 echo "----------- apache no query"
-./greap -i sample.apache.log  | tail -n 5
+./greap -i sample.apache.log  -k apache | tail -n 5
 
 echo "----------- channel manager no kind"
 ./greap -i sample.app.log | tail -n 5
