@@ -9,7 +9,7 @@ import logging
 # configure logging
 logging.basicConfig(
         stream=sys.stderr,
-        level=logging.INFO,
+        level=logging.DEBUG,
         format="GREAP %(levelname)s %(message)s")
 #TODO:configure it from settings and command line
 
@@ -20,6 +20,7 @@ def normal_output(msg=None):
     performed, results, etc. 
     Not the information related to the inner workings of the application
     """
+    #raise TypeError("when called")
     if msg == None:
         print("")
         return ""
@@ -40,12 +41,15 @@ def output(msg, loglevel="OUTPUT", deprecated_param = None):
             "DEBUG":logging.debug,
             "WARNING": logging.warning,
             "ERROR": logging.error,
-            "INFO": logging.info,
+            "INFO": logging.debug,
+            "EXC": logging.exception,
             "OUTPUT":normal_output
+            #"OUTPUT":logging.info
             }
+    levels[loglevel](msg)
+    return "GREAP {0} {1}".format(loglevel,msg)
     try:
-        levels[loglevel](msg)
-        return "GREAP {0} {1}".format(loglevel,msg)
-    except:
+        pass
+    except KeyError:
         logging.error("Log level not found: {0}".format(loglevel))
         logging.error("logging: ",msg)
