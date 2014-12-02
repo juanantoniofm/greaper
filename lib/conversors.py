@@ -50,6 +50,6 @@ def convert_xml(content=None, root = "root"):
         xml = mdom.parseString('<{0}>{1}</{0}>'.format(root,cleaned))
         return xml.toprettyxml()
     except (TypeError,expatbuilder.expat.ExpatError) as e:
-        output("Couldnt parse XML, {0}".format(e.__str__()), "DEBUG")
+        #output("Couldnt parse XML, {0}".format(e.__str__()), "DEBUG") #DEBUGGING too verbose
         return content
 
