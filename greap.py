@@ -46,16 +46,6 @@ command_parser.add_argument("-ng","--ngrep", dest="ngrep_regex",
 
 ################################################################################
 
-stats = {
-        "200" : { "count" : 0},
-        }
-
-
-def define_loglevel():
-    """sets a level of detail for the log."""
-    global loglevel
-    if args["verbose"]:
-        loglevel = "DEBUG"
 
 def grepit(line, regex="", nregex = ""):
     """
@@ -97,7 +87,7 @@ def read_in_lines(fh = None):
                 # check that the line matches with the pre-regex and if not, break
                 yield ""
             else:
-                output(line, "DEBUG",loglevel) # print debug info
+                #output("readinlines {0}".format(line), "DEBUG") # print debug info
                 yield line
  
 ################################################################################
@@ -108,7 +98,7 @@ def get_stats():
     while True:
         r = (yield)
         add_entry(r, stats)
-        output(stats, "DEBUG", loglevel)
+        output(stats, "DEBUG")
 
 
 @consumer
@@ -124,9 +114,10 @@ def compose(query, data=None):
     :return: the line to print with the fields in the order specified in query."""
     rl = " "
     #- first figure out which fields to print. either all of just queried ones.
+    output("entering compose","INFO")
     if query is None:
         queried_fields = [x for x in data.iterkeys()]
-        output("{0}".format(queried_fields.__str__()), "OUTPUT")
+        output("DEFQUERY {0}".format(queried_fields.__str__()), "OUTPUT")
     else:
         queried_fields = query.split(",")
     #- then go and create the line
@@ -144,38 +135,32 @@ def compose(query, data=None):
 def query_print():
     while True:
         r=(yield)
-        output(compose(args["query"], r))
+        output(compose(args["query"], r),"OUTPUT")
 
 
 ################################################################################
 
 if __name__ == "__main__":
     args = vars(command_parser.parse_args()) 
-    loglevel = "ERROR"  # the default value is DEBUG untill further development
     import lib.helpers as helpers
     import lib.parsmap as parsmap
-    helpers.loglevel = loglevel
-    parsmap.loglevel = loglevel
-    output( "GREAP log level: " + loglevel, "INFO")
 
     try:
-        output(args.__str__(),"DEBUG",loglevel) # show the params for debug purposes
-        define_loglevel()
+        output("parameters: {0}".format(args.__str__()),"DEBUG") # show the params for debug purposes
+
         lines = read_in_lines(open(args["input_file"],"r"))
 
-        log = get_producer(args["log_format"])(lines)
+        producer =  get_producer(args["log_format"])
+        log = producer(lines)
 
         broadcast(log, [query_print()])
 
     except ValueError as e:
         output("Are you sure you have choosen the proper logformat?", "ERROR")
-        output(e,"ERROR")
+        output(e,"EXC")
         sys.exit(1)
 
     except Exception as e:
-        output(e, "ERROR")
-        #print sys.exc_info() # TODO: clear it and use logging man
+        output(e, "EXC")
+        output("We are dead", "ERROR")
         sys.exit(1)
-    finally: #TODO:clear this hacky code and use logging, and proper handling
-        import traceback
-        traceback.print_exception( *sys.exc_info())
