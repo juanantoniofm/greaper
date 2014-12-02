@@ -23,3 +23,9 @@ echo "----------- channel breaker w kind  no query"
 
 echo "----------- channel breaket w kind w query"
 ./greap -i sample.ap2.log -k channel_manager -q loglevel,action,jobtype | tail -n 5
+
+echo "----------- channel breaker 3 w kind  no query"
+./greap -i sample.ap3.log -k channel_manager | tail -n 5
+
+echo "----------- channel breaker 3 w kind w query"
+./greap -i sample.ap3.log -k channel_manager -q loglevel,action,jobtype | tail -n 5
