@@ -38,22 +38,6 @@ def broadcast(source, consumers):
         for c in consumers:
             c.send(item)
 
-
-### Example of usage for broadcast
-##if __name__ == '__main__':
-##
-##    class Consumer(object):
-##        def send(self,item):
-##            print(self, "got", item:
-##
-##    c1 = Consumer()
-##    c2 = Consumer()
-##    c3 = Consumer()
-##
-##    from follow import *
-##    lines = follow(open("run/foo/access-log"))
-##    broadcast(lines,[c1,c2,c3])
-
 ################################################################################
 
 def field_map(dictseq, name, func,*args):
@@ -61,7 +45,7 @@ def field_map(dictseq, name, func,*args):
     """
     for d in dictseq:
         d[name] = func(d[name],*args)
-        print "       field mapping      "
+        ####print "       field mapping      elem:{0}; name:{1}".format(d,name) #DEBUGGING
         yield d
 
 
@@ -69,15 +53,12 @@ mpt = { # a table to define differences among log formats
         "apache": {
             "regex":r'(\S+) (\S+) (\S+) \[(.*?)\] ' \
                        r'"(\S+) (\S+) (\S+)" (\S+) (\S+) (\S+) (\S* ?\S* ?\S*)',
-                       # carefull, not compatible with other logs:
-                       #r'"(\S+) (\S+) (\S+)" (\S+) (\S+) "(\S+)" "(\S* ?\S* ?\S*)"'
-                       #r'"(\S+) (\S+) (\S+)" (\S+) (\S+) (\S+) (\S+)'
             "column_names":('host','referrer','user','datetime', 'method',
                             'request','proto','status','bytes','from','useragent'),
             "funcs":{"status":int,"bytes":lambda s: int(s) if s != '-' else 0},
             "params":{}},
         "channel_manager": {
-            "regex": r'(\w{3} \d{2} \d{2}:\d{2}:\d{2}) ' \
+            "regex": r'(\w{3} {0,2}\d{1,2} \d{2}:\d{2}:\d{2}) ' \
                       r'(app\w{4}\d{2}) ([a-z\-]*): ' \
                       r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) ' \
                       r'(\w*) *\[(.*?)\] (.*?) - (.*)',
@@ -99,10 +80,28 @@ def list_fields(mpt = mpt):
         help_line += kind + ": " + mpt[kind]["column_names"].__str__() + ";"
     return help_line
 
-#logpat   = re.compile(logpats)
-#logpat = re.compile(mpt["channel_manager"]["regex"])
-
 ################################################################################
+
+def matchit(regob, line, validation_fields = None):
+    """
+    match and validate the matching of a line against a regex object
+    :regob: regex pattern compiled
+    :line:  just a line
+    """
+    matched =  regob.match(line)
+    if validation_fields is not None:
+        try:
+            if len(matched.groups()) is not len(validation_fields):
+                raise ValueError("number of regex matches not valid")
+        except:
+            output("regob: {0}".format(type(regob)), "DEBUG")
+            output("line: {0}".format(line), "DEBUG")
+            output("validation: {0}".format(len(validation_fields)), "DEBUG")
+            output("matches: {0}".format(type(matched)), "DEBUG")
+            raise ValueError("regex not matching properly")
+
+    return matched
+
 
 def generic_log(lines=None,regex = None, colnames = None, converters = None, parameters = None):
     """
@@ -115,56 +114,65 @@ def generic_log(lines=None,regex = None, colnames = None, converters = None, par
     """
     assert regex is not None
     assert colnames is not None
-    ####if converters is None:
-    ####    converters = []
-    ####if  parameters is None:
-    ####    parameters = []
+    if lines == []:
+        raise ValueError("No lines provided")
 
-    print "lines",repr(lines)
-    print "regex",regex
-    print "columns",colnames
-    print "converts",converters
-    print "params", parameters
+    ####print "lines",repr(lines)
+    ####print "regex",regex
+    ####print "columns",colnames
+    ####print "converts",converters
+    ####print "params", parameters
 
     logpat = re.compile(regex)
-    groups = (logpat.match(line) for line in lines)
+
+    ### groups = (logpat.match(line) for line in lines if line != "")
+    ### mygroups = [x for x in groups]
+    ### if len(mygroups) < len(colnames):
+    ###     raise ValueError("regex not matching well")
+
+    groups = (matchit(logpat, line,colnames) for line in lines if line != "")
     mygroups = [x for x in groups]
-    if len(mygroups) < len(colnames):
-        raise ValueError("regex not matching well")
+    ####print "My Groups: ", mygroups  #DEBUGGING
     tuples = (g.groups() for g in mygroups if g)
 
     log = (dict(zip(colnames,t)) for t in tuples)
-    #try:
-    #    for colname in converters:
-    #        # try to convert each field
-    #        try:
-    #            # we have to pass the params as a pointer to the list
-    #            log = field_map(log,colname,converters[colname],*parameters[colname])
-    #        except TypeError:
-    #            output("unparsed field {0}".format(colname),"DEBUG")
-    #        output( "GENERIC LOG","DEBUG")
-    #        output([x for x in log],"DEBUG")
-    #except (TypeError) as e:
-    #    #TODO: define what to do in case of massive failure
-    #    output("failure parsing lines {0}".format(lines),"DEBUG") # verborreic output
-    #    output(e,"EXC")
-    #    raise sys.exc_info[1], None, exc_info[2]
+    try:
+        for colname in converters:
+            # try to convert each field
+            try:
+                # we have to pass the params as a pointer to the list
+                # and check if there are params 
+                if colname in parameters.keys():
+                    log = field_map(log,colname,converters[colname],*parameters[colname])
+                else:
+                    log = field_map(log,colname,converters[colname])
+
+            except TypeError:
+                output("unparsed field {0}".format(colname),"DEBUG")
+            #output([x for x in log],"DEBUG")
+    except (TypeError) as e:
+        #TODO: define what to do in case of massive failure
+        #output("failure parsing lines {0}".format(lines),"DEBUG") # verborreic output
+        output("failure parsing lines","DEBUG") # verborreic output
+        output(e,"EXC")
+        raise sys.exc_info[1], None, exc_info[2]
     return log
 
-### def apache_log(lines,mpt=mpt):
-###     """
-###     wrapper to call generic log with the proper params
-###     """
-###     kind = "apache"
-###     return generic_log( lines,
-###                         mpt[kind]["column_names"],
-###                         mpt[kind]["funcs"],
-###                         mpt[kind]["params"]
-###                       )
+def apache_log(lines,mpt=mpt):
+    """
+    wrapper to call generic log with the proper params
+    """
+    kind = "apache"
+    return generic_log( lines,
+                        mpt[kind]["regex"],
+                        mpt[kind]["column_names"],
+                        mpt[kind]["funcs"],
+                        mpt[kind]["params"]
+                      )
 
 
 def channel_manager_log(lines):
-    new_channel_manager_log(lines) # TODO: please delete this method
+    return new_channel_manager_log(lines) # TODO: please delete this method
 
 def new_channel_manager_log(lines):
     """
@@ -189,7 +197,7 @@ def new_channel_manager_log(lines):
 #                          mpt[kind]["params"]
                         app_func, app_params
                       )
-    print ("PROCESSED: ", processed)
+    ####print ("PROCESSED: ", len([x for x in processed]))
     return processed
 
 
@@ -215,7 +223,7 @@ def old_channel_manager_log(lines):
     return log
 
 
-def apache_log(lines):
+def old_apache_log(lines):
     """
     Parse an apache log file into a sequence of dictionaries.
     Old fashioned method to be deprecated
