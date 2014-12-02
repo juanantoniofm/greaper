@@ -69,7 +69,13 @@ mpt = { # a table to define differences among log formats
             "regex": r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) ' \
                       r'(\w*) *\[(.*?)\] (.*?) - (.*)',
             "column_names": ('datetime','loglevel','tracing', 'jobtype','action'),
-            "funcs":""}
+            "funcs":{}},
+        "lh":{
+            "regex": r'(\w{3} {0,2}\d{1,2} \d{2}:\d{2}:\d{2}) (app.*) (.*):' \
+                      r'*\[(.*?)\] *\[(.*?)\] (.*)',
+            "column_names": ('logdate','machine','instance','tracing','jobtype','action'),
+            "funcs":{},
+            "params":{}},
         }
 
 
@@ -77,7 +83,7 @@ def list_fields(mpt = mpt):
     """make a nice list of the fields available for each kind of log"""
     help_line = ""
     for kind, v in mpt.iteritems():
-        help_line += kind + ": " + mpt[kind]["column_names"].__str__() + ";"
+        help_line += kind + ": " + mpt[kind]["column_names"].__str__() + ";\n"
     return help_line
 
 ################################################################################
@@ -93,13 +99,13 @@ def matchit(regob, line, validation_fields = None):
         try:
             if len(matched.groups()) is not len(validation_fields):
                 raise ValueError("number of regex matches not valid")
-        except:
+        except (ValueError,AttributeError),e :
             output("regob: {0}".format(type(regob)), "DEBUG")
             output("pattern: {0}".format(regob.pattern), "DEBUG")
             output("line: {0}".format(line), "DEBUG")
             output("validation: {0}".format(len(validation_fields)), "DEBUG")
             output("matches: {0}".format(type(matched)), "DEBUG")
-            raise ValueError("regex not matching properly")
+            raise ValueError("regex not matching properly, {0}".format(e))
 
     return matched
 
@@ -202,6 +208,20 @@ def new_channel_manager_log(lines):
     return processed
 
 
+def little_hotelier_log(lines):
+    """
+    for our little friend
+    """
+    kind = "lh"  # that means little hotelier
+    return generic_log(lines,
+                        mpt[kind]["regex"],
+                        mpt[kind]["column_names"],
+                        mpt[kind]["funcs"],
+                        mpt[kind]["params"]
+                      )
+
+
+
 def old_channel_manager_log(lines):
     """
     Parse an application log into a sequence of dicts
@@ -222,6 +242,7 @@ def old_channel_manager_log(lines):
         raise sys.exc_info[1], None, exc_info[2]
 
     return log
+
 
 
 def old_apache_log(lines):
@@ -251,6 +272,7 @@ def old_apache_log(lines):
 producers = {
         "apache": apache_log,
         "channel_manager": channel_manager_log,
+        "lh": little_hotelier_log,
         "new_channel_manager": new_channel_manager_log
         }
 
