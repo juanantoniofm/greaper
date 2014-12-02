@@ -104,16 +104,27 @@ def list_fields(mpt = mpt):
 
 ################################################################################
 
-def generic_log(lines,regex = None, colnames = None, converters = None, parameters = None):
+def generic_log(lines=None,regex = None, colnames = None, converters = None, parameters = None):
     """
     generic function to parse log lines, based on a dic of field:conversor
+    :lines: 
+    :regex: regular expression that will match each field
+    :colnames: names in order for the fields
+    :converters: functions that will process the different fields
+    :parameters: extra data to pass to the converter functions
     """
     assert regex is not None
     assert colnames is not None
-    if converters is None:
-        converters = []
-    if  parameters is None:
-        parameters = []
+    ####if converters is None:
+    ####    converters = []
+    ####if  parameters is None:
+    ####    parameters = []
+
+    print "lines",repr(lines)
+    print "regex",regex
+    print "columns",colnames
+    print "converts",converters
+    print "params", parameters
 
     logpat = re.compile(regex)
     groups = (logpat.match(line) for line in lines)
@@ -178,6 +189,7 @@ def new_channel_manager_log(lines):
 #                          mpt[kind]["params"]
                         app_func, app_params
                       )
+    print ("PROCESSED: ", processed)
     return processed
 
 
@@ -226,30 +238,6 @@ def apache_log(lines):
 
     return log
 
-
-    
-def guess_logkind(filename):
-    """try to guess the kind of log from the filename"""
-    raise Exception("Not f'in plemented")
-
-
-def validate_logkind(log_format, supported_formats = [ k for k in mpt.iterkeys() ]):
-    """validate the kind of log, or fail and exit with a list of supported formats"""
-    if log_format not in supported_formats:
-        raise LookupError("""I couldn't find your log kind in my list.
-        see supported: {0}""".format([f for f in mpt.iterkeys()]))
-    else:
-        return True
-
-
-def define_logkind():
-    """basic logic to find out what kind of log are we parsing"""
-    if args["log_format"] == False:
-        #- not user-defined, so try fuzzy logic
-        return validate_logkind(guess_logkind(args["input_file"]))
-    else:
-        # user defined, so check if is valid
-        return validate_logkind(args["log_format"])
 
 producers = {
         "apache": apache_log,
