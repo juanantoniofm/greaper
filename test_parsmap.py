@@ -79,7 +79,7 @@ class test_validate_logkind(BaseTest):
 
 
 ################################################################################
-from parsmap import app_log
+from parsmap import channel_manager_log
 
 class test_app_log(BaseTest):
     """app_log need lines to be fed.
