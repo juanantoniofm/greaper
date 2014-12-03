@@ -6,7 +6,7 @@ import sys
 
 from lib.parsmap import field_map, consumer, convert_time
 from lib.parsmap import mpt,list_fields,  broadcast, get_producer,producers
-from lib.helpers import output 
+from lib.helpers import output,line_matches_greps, grepit
 import myfilters 
 
 command_parser = argparse.ArgumentParser(
@@ -35,7 +35,7 @@ command_parser.add_argument("-k","--kind", dest="log_format",
             ", ".join(producers.iterkeys())),
         required=False)
 
-command_parser.add_argument("-g","--grep", dest="grep_regex",
+command_parser.add_argument("-g","--grep", dest="grep_regex", default=[],action='append',
         help="Use the expresion t filter the input", required=False)
 
 command_parser.add_argument("-ng","--ngrep", dest="ngrep_regex",
@@ -45,34 +45,6 @@ command_parser.add_argument("-ng","--ngrep", dest="ngrep_regex",
 
 
 ################################################################################
-
-
-def grepit(line, regex="", nregex = ""):
-    """
-    only returns a line if it matches the rexex, and doesn't match the ngrep regex
-    :line: line of the log to process
-    :regex: expresion to validate the line
-    :nregex: expresion to discard the line
-    """
-    if regex is None:
-        regex = "" 
-    if nregex is None:
-        nregex  = ""
-    if ((nregex is not "" ) and  (nregex in line)): 
-        # if it matches neg regex, return nothing
-        return ""
-    else:
-        # if not, check if we have a positive regex
-        if (regex is not "" ):
-            if (regex in line) :
-                # and if does, return the line
-                return line
-            else:
-                return ""
-        else:
-            # if we don't have a positive regex, return line
-            return line
-
 
 def read_in_lines(fh = None):
     """read a file line by line

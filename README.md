@@ -12,12 +12,9 @@ It was tested in a 300MB file, using 99% of 1 CPU thread, and 6MB of RAM to run 
 It is highly portable, and easily extendable, what means that can be used for many other purposes, like application logs, etc.
 In fact, as-is is ready to handle any other log from apache (with our current configuration).
 
-It's focused on the log format present in the central log servers, so it also parses the timestamp in the beggining of the line.
-
 ## Dependencies
 
 so far, everything is built in.
-=======
 
 # Bugs, Improvements, etc
 
