@@ -40,7 +40,7 @@ def output(msg, loglevel="OUTPUT", deprecated_param = None):
     :loglevel: the loglevel to which the msg belongs
     :deprecated_param: just that. a deprecated param that will be removed soon from the callers
     """
-    # to imitate a switch/case behaviour, we use a hashmap:
+    #- to imitate a switch/case behaviour, we use a hashmap:
     levels = {
             "DEBUG":logging.debug,
             "WARNING": logging.warning,
@@ -48,7 +48,6 @@ def output(msg, loglevel="OUTPUT", deprecated_param = None):
             "INFO": logging.debug,
             "EXC": logging.exception,
             "OUTPUT":normal_output
-            #"OUTPUT":logging.info
             }
     try:
         levels[loglevel](msg)
@@ -66,7 +65,7 @@ def line_matches_greps(line, greplist=None):
     :greplist: list of grep parameters
     """
     assert greplist is not None
-    # if the list is empty is because we are not actually searching nothing
+    #- if the list is empty is because we are not actually searching nothing
     if greplist ==  [] or line is None:
         return line
 
@@ -88,7 +87,7 @@ def line_no_matches_ngreps(line, ngreplist=None):
     :ngreplist: a list with the expresions to discard
     """
     assert ngreplist is not None
-    # if the list is empty is because we are not actually searching anything
+    #- if the list is empty is because we are not actually searching anything
     if ngreplist == [] or line is None:
         return line
 
@@ -109,7 +108,6 @@ def grepit(line, regex=[], nregex = []):
     :regex: expresion to validate the line
     :nregex: expresion to discard the line
     """
-    #TODO: it can be simplified with the new line_matches_greps method
     if regex is None:
         regex = []
     if nregex is None:

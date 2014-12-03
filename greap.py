@@ -56,7 +56,7 @@ def read_in_lines(fh = None):
             break
         else:
             if not grepit(line, args["grep_regex"], args["ngrep_regex"]):
-                # check that the line matches with the pre-regex and if not, break
+                #- check that the line matches with the pre-regex and if not, break
                 yield ""
             else:
                 #output("readinlines {0}".format(line), "DEBUG") # print debug info
@@ -116,10 +116,6 @@ debug_mode = False
 if __name__ == "__main__":
     args = vars(command_parser.parse_args()) 
     configure_logging(args["verbose"])
-
-    #import lib.helpers as helpers
-    #import lib.parsmap as parsmap
-
     try:
         output("parameters: {0}".format(args.__str__()),"DEBUG") # show the params for debug purposes
 

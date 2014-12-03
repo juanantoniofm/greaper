@@ -124,6 +124,7 @@ def generic_log(lines=None,regex = None, colnames = None, converters = None, par
     if lines == []:
         raise ValueError("No lines provided")
 
+    ##### DEBUGGING
     ####print "lines",repr(lines)
     ####print "regex",regex
     ####print "columns",colnames
@@ -132,23 +133,17 @@ def generic_log(lines=None,regex = None, colnames = None, converters = None, par
 
     logpat = re.compile(regex)
 
-    ### groups = (logpat.match(line) for line in lines if line != "")
-    ### mygroups = [x for x in groups]
-    ### if len(mygroups) < len(colnames):
-    ###     raise ValueError("regex not matching well")
-
     groups = (matchit(logpat, line,colnames) for line in lines if line != "")
     mygroups = [x for x in groups]
-    ####print "My Groups: ", mygroups  #DEBUGGING
     tuples = (g.groups() for g in mygroups if g)
 
     log = (dict(zip(colnames,t)) for t in tuples)
     try:
         for colname in converters:
-            # try to convert each field
+            #- try to convert each field
             try:
-                # we have to pass the params as a pointer to the list
-                # and check if there are params 
+                #- we have to pass the params as a pointer to the list
+                #- and check if there are params 
                 if colname in parameters.keys():
                     log = field_map(log,colname,converters[colname],*parameters[colname])
                 else:
@@ -156,10 +151,8 @@ def generic_log(lines=None,regex = None, colnames = None, converters = None, par
 
             except TypeError:
                 output("unparsed field {0}".format(colname),"DEBUG")
-            #output([x for x in log],"DEBUG")
     except (TypeError) as e:
         #TODO: define what to do in case of massive failure
-        #output("failure parsing lines {0}".format(lines),"DEBUG") # verborreic output
         output("failure parsing lines","DEBUG") # verborreic output
         output(e,"EXC")
         raise sys.exc_info[1], None, exc_info[2]
@@ -191,7 +184,7 @@ def new_channel_manager_log(lines):
                     "logdate":convert_time,
                     "action":convert_xml
                     }
-    # params have to be lists, so it can be properly referenced inside
+    #- params have to be lists, so it can be properly referenced inside
     app_params = {"datetime":["%Y-%m-%d %H:%M:%S,%f"],
                     "logdate":["%b %d %H:%M:%S"],
                     "action":[]
@@ -204,7 +197,6 @@ def new_channel_manager_log(lines):
 #                          mpt[kind]["params"]
                         app_func, app_params
                       )
-    ####print ("PROCESSED: ", len([x for x in processed]))
     return processed
 
 
