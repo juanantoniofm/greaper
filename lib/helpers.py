@@ -7,11 +7,16 @@ import sys
 import logging
 
 # configure logging
-logging.basicConfig(
+def configure_logging(debug_enabled = False):
+    if debug_enabled:
+        logger = logging.DEBUG
+    else:
+        logger = logging.INFO
+
+    logging.basicConfig(
         stream=sys.stderr,
-        level=logging.DEBUG,
+        level=logger,
         format="GREAP %(levelname)s %(message)s")
-#TODO:configure it from settings and command line
 
 
 def normal_output(msg=None):
@@ -20,7 +25,6 @@ def normal_output(msg=None):
     performed, results, etc. 
     Not the information related to the inner workings of the application
     """
-    #raise TypeError("when called")
     if msg == None:
         print("")
         return ""
@@ -46,10 +50,9 @@ def output(msg, loglevel="OUTPUT", deprecated_param = None):
             "OUTPUT":normal_output
             #"OUTPUT":logging.info
             }
-    levels[loglevel](msg)
-    return "GREAP {0} {1}".format(loglevel,msg)
     try:
-        pass
+        levels[loglevel](msg)
+        return "GREAP {0} {1}".format(loglevel,msg)
     except KeyError:
         logging.error("Log level not found: {0}".format(loglevel))
         logging.error("logging: ",msg)
@@ -64,7 +67,6 @@ def line_matches_greps(line, greplist=None):
     """
     assert greplist is not None
     # if the list is empty is because we are not actually searching nothing
-    print(line)
     if greplist ==  [] or line is None:
         return line
 
@@ -121,5 +123,6 @@ def grepit(line, regex=[], nregex = []):
                 line,
                 nregex),
             regex)
+
 
 

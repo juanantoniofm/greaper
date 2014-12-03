@@ -5,8 +5,8 @@ import argparse
 import sys
 
 from lib.parsmap import field_map, consumer, convert_time
-from lib.parsmap import mpt,list_fields,  broadcast, get_producer,producers
-from lib.helpers import output,line_matches_greps, grepit
+from lib.parsmap import mpt,list_fields, broadcast, get_producer, producers
+from lib.helpers import configure_logging, output, line_matches_greps, grepit
 import myfilters 
 
 command_parser = argparse.ArgumentParser(
@@ -88,7 +88,7 @@ def compose(query, data=None):
     #- first figure out which fields to print. either all of just queried ones.
     if query is None:
         queried_fields = [x for x in data.iterkeys()]
-        output("DEFQUERY {0}".format(queried_fields.__str__()), "OUTPUT")
+        output("DEFQUERY {0}".format(queried_fields.__str__()), "DEBUG")
     else:
         queried_fields = query.split(",")
     #- then go and create the line
@@ -111,10 +111,14 @@ def query_print():
 
 ################################################################################
 
+debug_mode = False
+
 if __name__ == "__main__":
     args = vars(command_parser.parse_args()) 
-    import lib.helpers as helpers
-    import lib.parsmap as parsmap
+    configure_logging(args["verbose"])
+
+    #import lib.helpers as helpers
+    #import lib.parsmap as parsmap
 
     try:
         output("parameters: {0}".format(args.__str__()),"DEBUG") # show the params for debug purposes
