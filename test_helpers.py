@@ -63,6 +63,46 @@ from helpers import  output
 ###         eq_(None, output())
 
 ################################################################################
+from helpers import  line_no_matches_ngreps
+
+
+class test_line_no_matches_ngreps(BaseTest):
+    def setUp(self):
+        self.line = "foobarbaz"
+
+    @raises(AssertionError)
+    def test_no_greplist_raises(self):
+        """if we dont pass greplist, raise"""
+        line_no_matches_ngreps(self.line)
+
+    def test_empty_greplist_returns_line(self):
+        """for a empty list of ngreaps, return the line"""
+        # as it might mean we are not actually searching
+        eq_(self.line,line_no_matches_ngreps(self.line,[]))
+
+
+    def test_single_match_returns_none(self):
+        """
+        for a simple ngrep expr, match it and return none
+        """
+        eq_(None,line_no_matches_ngreps(self.line,["foo"]))
+
+    def test_single_not_match_returns_line(self):
+        """for a single expr that not match, return line"""
+        eq_(self.line,line_no_matches_ngreps(self.line,["nomatch"]))
+
+
+    def test_multi_match_return_expr(self):
+        """for a multiple expr that match, return none"""
+        eq_(None,line_no_matches_ngreps(self.line,["foo","bar"]))
+
+
+    def test_multi_no_match_return_expr(self):
+        """for a multiple expr where 1 does't and 1 does match, return nothing"""
+        eq_(None,line_no_matches_ngreps(self.line,["foo","idontmatch"]))
+
+
+################################################################################
 from helpers import  line_matches_greps
 
 
@@ -88,7 +128,7 @@ class test_line_matches_greps(BaseTest):
         """
         eq_(self.line,line_matches_greps(self.line,["foo"]))
 
-    def test_single_not_match_returns_BBBBB(self):
+    def test_single_not_match_returns_none(self):
         """for a single expr that not match, return nothing"""
         eq_(None,line_matches_greps(self.line,["nomatch"]))
 
