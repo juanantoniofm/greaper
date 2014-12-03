@@ -29,6 +29,7 @@ so far, everything is built in.
 - for cm sync logs, take the "Enqueue sync request <tokens>" and use a consumer to detect it, and print aditional tracking info for it.
 - be able to specify a format string instead of a simple list of fields
 - include more than one -g or -ng in the same command line
+	- right now, we can already do it, but is in "OR" mode, not in "AND"
 
 
 ## Proposed use cases:
