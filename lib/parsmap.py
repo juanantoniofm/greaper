@@ -59,7 +59,7 @@ mpt = { # a table to define differences among log formats
             "params":{}},
         "channel_manager": {
             "regex": r'(\w{3} {0,2}\d{1,2} \d{2}:\d{2}:\d{2}) ' \
-                      r'(app\w{4}\d{2}) ([a-z\-]*): ' \
+                      r'(app\w{4}\d{2}) ([a-z0-9\-]*): ' \
                       r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) ' \
                       r'(\w*) *\[(.*?)\] (.*?) - (.*)',
             "column_names": ('logdate','machine','logfile','datetime','loglevel','tracing',
@@ -95,6 +95,7 @@ def matchit(regob, line, validation_fields = None):
                 raise ValueError("number of regex matches not valid")
         except:
             output("regob: {0}".format(type(regob)), "DEBUG")
+            output("pattern: {0}".format(regob.pattern), "DEBUG")
             output("line: {0}".format(line), "DEBUG")
             output("validation: {0}".format(len(validation_fields)), "DEBUG")
             output("matches: {0}".format(type(matched)), "DEBUG")
