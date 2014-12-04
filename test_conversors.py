@@ -80,4 +80,3 @@ class test_xml_stats(unittest.TestCase):
     def test_dont_die_for_bad_xml(self):
         """ if we pass valid xml, return it nicely formatted"""
         eq_("",xml_stats(""))
-e
