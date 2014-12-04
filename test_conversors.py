@@ -45,14 +45,14 @@ class test_xml_stats(unittest.TestCase):
 
     @raises(TypeError)
     def test_a_dic_is_wrong(self):
-        eq_("",xml_stats(self.basic_logdata))
+        eq_("",xml_stats({}))
 
     @raises(TypeError)
     def test_none(self):
         eq_("",xml_stats(None))
 
     @raises(TypeError)
-    def test_wrong_input(self):
+    def test_empty_string_raises(self):
         eq_("",xml_stats(""))
  
     def test_dont_die_for_bad_xml(self):
@@ -61,12 +61,14 @@ class test_xml_stats(unittest.TestCase):
         eq_(input,xml_stats(input))
  
     def test_detect_response(self):
+        """detect properly a response"""
         expected1 = """RESPONSE rtt=848 ms; size=64 bytes"""
         expected2 = """RESPONSE rtt=1036 ms; size=64 bytes"""
         eq_("",xml_stats(self.responses[0]))
         eq_("",xml_stats(self.responses[1]))
  
     def test_detect_request(self):
+        """detect properly a request"""
         expected1 = """REQUEST size=64 bytes"""
         expected2 = """REQUEST size=64 bytes"""
         eq_("",xml_stats(self.requests[0]))
