@@ -1,4 +1,7 @@
 
+from lib.conversors import convert_time,convert_xml
+
+
 mpt = { # a table to define differences among log formats
 "apache": {
     "regex":r'(\S+) (\S+) (\S+) \[(.*?)\] ' \
@@ -24,8 +27,8 @@ mpt = { # a table to define differences among log formats
     "regex": r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) ' \
               r'(\w*) *\[(.*?)\] (.*?) - (.*)',
     "column_names": ('datetime','loglevel','tracing', 'jobtype','action'),
-    "funcs":{},
-    "params":{}
+    "funcs":{"action":convert_xml,"datetime":convert_time},
+    "params":{"datetime":["%Y-%m-%d %H:%M:%S,%f"]}
     },
 
 "lh":{

@@ -104,9 +104,14 @@ def generic_log(lines=None,regex = None, colnames = None, converters = None, par
 
     logpat = re.compile(regex)
 
-    groups = (matchit(logpat, line,colnames) for line in lines if line != "")
-    mygroups = [x for x in groups]
-    tuples = (g.groups() for g in mygroups if g)
+    #####Debugging lines
+    ####groups = (matchit(logpat, line,colnames) for line in lines if line != "")
+    ####mygroups = [x for x in groups]
+    ####tuples = (g.groups() for g in mygroups if g)
+
+    #- using generator funcs
+    groups = (matchit(logpat,line,colnames) for line in lines if line.strip() != "")
+    tuples = (g.groups() for g in groups if g)
 
     log = (dict(zip(colnames,t)) for t in tuples)
     try:
@@ -185,6 +190,20 @@ def little_hotelier_log(lines):
 
 
 
+def cm_appserver_log(lines):
+    """
+    for our little friend
+    """
+    kind = "cm_appserver"  # that means little hotelier
+    return generic_log(lines,
+                        mpt[kind]["regex"],
+                        mpt[kind]["column_names"],
+                        mpt[kind]["funcs"],
+                        mpt[kind]["params"]
+                      )
+
+
+
 def old_channel_manager_log(lines):
     """
     Parse an application log into a sequence of dicts
@@ -235,6 +254,7 @@ def old_apache_log(lines):
 producers = {
         "apache": apache_log,
         "channel_manager": channel_manager_log,
+        "cm_appserver": cm_appserver_log,
         "lh": little_hotelier_log,
         "new_channel_manager": new_channel_manager_log
         }
