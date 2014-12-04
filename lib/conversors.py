@@ -53,3 +53,11 @@ def convert_xml(content=None, root = "root"):
         #output("Couldnt parse XML, {0}".format(e.__str__()), "DEBUG") #DEBUGGING too verbose
         return content
 
+
+def xml_stats(content=None, root="root"):
+    """
+    extract stats from an xml request/response
+    """
+    #- detect if we are talking about request, response, or other shit
+
+    return content
