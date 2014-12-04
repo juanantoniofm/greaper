@@ -6,6 +6,7 @@ import sys
 
 from lib.parsmap import field_map, consumer, convert_time
 from lib.parsmap import mpt,list_fields, broadcast, get_producer, producers
+from mappings import mpt
 from lib.helpers import configure_logging, output, line_matches_greps, grepit
 import myfilters 
 
@@ -84,6 +85,8 @@ def compose(query, data=None):
     :query: list of params to print from the log line parsed.
     :data:  the dictionary with the parsed line.
     :return: the line to print with the fields in the order specified in query."""
+    #TODO: change the behaviour, so compose will print the line in the same order of
+    #      the original line, when no query specified
     rl = " "
     #- first figure out which fields to print. either all of just queried ones.
     if query is None:
