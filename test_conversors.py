@@ -69,8 +69,8 @@ class test_xml_stats(unittest.TestCase):
     def test_detect_request(self):
         expected1 = """REQUEST size=64 bytes"""
         expected2 = """REQUEST size=64 bytes"""
-        eq_("",xml_stats(self.request[0]))
-        eq_("",xml_stats(self.request[1]))
+        eq_("",xml_stats(self.requests[0]))
+        eq_("",xml_stats(self.requests[1]))
  
     def test_nice_xml(self):
         """ if we pass valid xml, return nice stats"""

@@ -60,4 +60,11 @@ def xml_stats(content=None, root="root"):
     """
     #- detect if we are talking about request, response, or other shit
 
+    result_template = "{kind} size={size} chars;"
+
+    if "REQUEST" in content[1:10]:
+        return result_template.format(kind="REQUEST",size=len(content))
+    if "RESPONSE" in content[1:10]:
+        return result_template.format(kind="RESPONSE",size=len(content))
+
     return content
