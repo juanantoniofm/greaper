@@ -1,6 +1,57 @@
 import unittest
 from nose.tools import *
 
+
+################################################################################
+from conversors import convert_time
+
+class test_convert_time(unittest.TestCase):
+    """basic integrity tests"""
+    def test_valid_time_valid_output(self):
+        """ valid time valid output """
+        eq_("06:44",convert_time("17/Nov/2014:06:44:08 +0000"))
+
+    def test_valid_time_alt_input_format(self):
+        """ valid time in alt input format """
+        eq_("00:02",convert_time("2014-11-25 00:02:00,180","%Y-%m-%d %H:%M:%S,%f"))
+
+    def test_valid_time_alt_output_format(self):
+        """ valid time valid output alt format"""
+        eq_("06_44_08",convert_time("17/Nov/2014:06:44:08 +0000",out_format="%H_%M_%S"))
+
+    def test_valid_converts_microseconds(self):
+        """ valid time valid output alt format"""
+        eq_("00_02_00_180000",convert_time("2014-11-25 00:02:00,180",
+                            in_format="%Y-%m-%d %H:%M:%S,%f",
+                            out_format="%H_%M_%S_%f"))
+
+
+    @raises(TypeError)
+    def test_none_values(self):
+        """ None value raises TypeError """
+        convert_time(None)
+
+    @raises(TypeError)
+    def test_empty_string_raises_TypeError(self):
+        """ empty string raises TypeError """
+        convert_time("")
+
+    @raises(TypeError)
+    def test_empty_format_raises_typeerror(self):
+        """ empty_format_raises_typeerror"""
+        convert_time("17/Nov/2014:06:44:08 +0000", "")
+
+    @raises(TypeError)
+    def test_empty_outformat_raises_typeerror(self):
+        """ empty_format_raises_typeerror"""
+        convert_time("17/Nov/2014:06:44:08 +0000", out_format="")
+
+    @nottest
+    def test_(self):
+        """ XX """
+        convert_time()
+
+
 ################################################################################
 from conversors import clean_action_to_xml
 
@@ -62,23 +113,28 @@ class test_xml_stats(unittest.TestCase):
  
     def test_detect_response(self):
         """detect properly a response"""
-        expected1 = """RESPONSE rtt=848 ms; size=64 bytes"""
-        expected2 = """RESPONSE rtt=1036 ms; size=64 bytes"""
-        eq_("",xml_stats(self.responses[0]))
-        eq_("",xml_stats(self.responses[1]))
+        expected1 = """RESPONSE size=202 chars; rtt:848;"""
+        expected2 = """RESPONSE size=202 chars; rtt:1036;"""
+        eq_(expected1,xml_stats(self.responses[0]))
+        eq_(expected2,xml_stats(self.responses[1]))
  
     def test_detect_request(self):
         """detect properly a request"""
-        expected1 = """REQUEST size=64 bytes"""
-        expected2 = """REQUEST size=64 bytes"""
-        eq_("",xml_stats(self.requests[0]))
-        eq_("",xml_stats(self.requests[1]))
+        expected1 = """REQUEST size=464 chars;"""
+        expected2 = """REQUEST size=468 chars;"""
+        eq_(expected1,xml_stats(self.requests[0]))
+        eq_(expected2,xml_stats(self.requests[1]))
  
     def test_nice_xml(self):
         """ if we pass valid xml, return nice stats"""
-        eq_("",xml_stats(""))
+        inputxml = """[REQUEST] [<root></root>]"""
+        expect = """REQUEST size=13 chars;"""
+        eq_(expect,xml_stats(inputxml))
  
     @nottest
     def test_dont_die_for_bad_xml(self):
         """ if we pass valid xml, return it nicely formatted"""
         eq_("",xml_stats(""))
+
+
+#TODO: add tests for trim_token and brother

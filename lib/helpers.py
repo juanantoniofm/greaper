@@ -1,4 +1,6 @@
 
+#-*- coding: utf-8 -*-
+
 """ Module to host some helper function, mainly related to logging and printing"""
 
 
@@ -18,6 +20,13 @@ def configure_logging(debug_enabled = False):
         level=logger,
         format="GREAP %(levelname)s %(message)s")
 
+
+def paint_red(msg):
+    """
+    print the message in red
+    """
+    formatter = r"|\033[0;31m\\e[7m {0} \e[0m|"
+    return formatter.format(msg)
 
 def normal_output(msg=None):
     """
@@ -121,6 +130,7 @@ def grepit(line, regex=[], nregex = []):
                 line,
                 nregex),
             regex)
+
 
 
 

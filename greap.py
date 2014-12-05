@@ -87,7 +87,7 @@ def compose(query, data=None):
     :return: the line to print with the fields in the order specified in query."""
     #TODO: change the behaviour, so compose will print the line in the same order of
     #      the original line, when no query specified
-    rl = " "
+    rl = ""
     #- first figure out which fields to print. either all of just queried ones.
     if query is None:
         queried_fields = [x for x in data.iterkeys()]
