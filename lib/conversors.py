@@ -125,3 +125,24 @@ def trim_token_inventoryjobs(content=None,template = "\thotel {hotelier} member 
     output("regex result: {0}".format([ x for x in groups]),"DEBUG")
 
     return template.format(hotelier=groups[2],membership=groups[3],token=groups[0],timestamp=groups[1])
+
+
+def categorize_errors(content=None):
+    """categorize the errors for the specifiq case of despegar"""
+    if content is None:
+        raise TypeError("Couldn't categorize this Error")
+
+    default_value = 100
+    
+    ref_template = """{handshake};{timeout};{config}"""# Just as a reference for you.
+
+    if "ConfigurationException" in content:
+        return "{0};None;None".format(default_value)
+
+    if "during handshake" in content:
+        return "None;{0};None".format(default_value)
+
+    if "timed out" in content:
+        return "None;None;{0}".format(default_value)
+
+    return "None;None;None"

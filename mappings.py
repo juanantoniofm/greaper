@@ -1,4 +1,6 @@
-from lib.conversors import convert_time,convert_xml,xml_stats,trim_token,trim_token_inventoryjobs
+from lib.conversors import convert_time,convert_xml,xml_stats,trim_token
+from lib.conversors import trim_token_inventoryjobs,categorize_errors
+################################################################################
 
 
 mpt = { # a table to define differences among log formats
@@ -26,8 +28,9 @@ mpt = { # a table to define differences among log formats
     "regex": r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) ' \
               r'(\w*) *\[(.*?)\] (.*?) - (.*)',
     "column_names": ('datetime','loglevel','tracing', 'jobtype','action'),
-    "funcs":{"action":xml_stats,"datetime":convert_time,"tracing":trim_token_inventoryjobs},
-    "params":{"datetime":["%Y-%m-%d %H:%M:%S,%f","%Y-%m-%d %H:%M:%S,%f"],"tracing":["{timestamp}"]}
+    #"funcs":{"action":xml_stats,"datetime":convert_time,"tracing":trim_token_inventoryjobs},
+    "funcs":{"action":categorize_errors,"datetime":convert_time,"tracing":trim_token_inventoryjobs},
+    "params":{"datetime":["%Y-%m-%d %H:%M:%S,%f","%Y-%m-%d %H:%M:%S"],"tracing":["{timestamp}"]}
     },
 
 "lh":{

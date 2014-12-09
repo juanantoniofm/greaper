@@ -138,3 +138,38 @@ class test_xml_stats(unittest.TestCase):
 
 
 #TODO: add tests for trim_token and brother
+
+
+################################################################################
+from conversors import categorize_errors
+
+class test_categorize_errors(unittest.TestCase):
+    def setUp(self):
+        self.timeout="""Exception occurred synchronizing batch for Design Suites at Castle Beach (7763)org.springframework.ws.client.WebServiceIOException: I/O error: Read timed out; nested exception is java.net.Socket"""
+        self.config="""au.com.siteminder.commons.ConfigurationException: Failed to update Vain Boutique Hotel (4268)/Senior BB [Error:Update error : Text:Invalid room type id 22, Error:Update error : Text:Invalid room"""
+        self.handshake="""Exception occurred synchronizing batch for Design Suites at Castle Beach (7763)org.springframework.ws.client.WebServiceIOException: I/O error: Remote host closed connection during handshake; nes"""
+
+    @raises(TypeError)
+    def test_none_raises_typeerror(self):
+        """a none input raises a TypeError"""
+        categorize_errors(None)
+
+    def test_detect_timeout(self):
+        """a timeout is marked as the 3rd field"""
+        expected = """None;None;100"""
+        eq_(expected, categorize_errors(self.timeout))
+
+    def test_detect_handshake(self):
+        """a handshake is marked as 2nd field"""
+        expected = """None;100;None"""
+        eq_(expected, categorize_errors(self.handshake))
+
+    def test_detect_config(self):
+        """a config error is marked as the 1st field"""
+        expected = """100;None;None"""
+        eq_(expected, categorize_errors(self.config))
+
+    def test_no_error_dont_map_to_nothing(self):
+        """if no error, dont map anything"""
+        expected="""None;None;None"""
+        eq_(expected, categorize_errors("this is absolutely right"))
