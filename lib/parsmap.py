@@ -93,7 +93,7 @@ def generic_log(lines=None,regex = None, colnames = None, converters = None, par
     assert regex is not None
     assert colnames is not None
     if lines == []:
-        raise ValueError("No lines provided")
+        raise ValueError("No lines provided") #TODO:COVER
 
     ##### DEBUGGING
     ####print "lines",repr(lines)
@@ -121,13 +121,13 @@ def generic_log(lines=None,regex = None, colnames = None, converters = None, par
                 #- we have to pass the params as a pointer to the list
                 #- and check if there are params 
                 if colname in parameters.keys():
-                    log = field_map(log,colname,converters[colname],*parameters[colname])
+                    log = field_map(log,colname,converters[colname],*parameters[colname]) #TODO:COVER
                 else:
                     log = field_map(log,colname,converters[colname])
 
-            except TypeError:
+            except TypeError:  #TODO:COVER
                 output("unparsed field {0}".format(colname),"DEBUG")
-    except (TypeError) as e:
+    except (TypeError) as e: #TODO:COVER
         #TODO: define what to do in case of massive failure
         output("failure parsing lines","DEBUG") # verborreic output
         output(e,"EXC")

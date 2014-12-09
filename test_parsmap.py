@@ -58,11 +58,11 @@ class test_channel_manager_log(BaseTest):
     def setUp(self):
         # open the file and load the sample
         self.applines=""
-        with open("sample.app.log","r") as f:
+        with open("../crap/samples/sample.app.log","r") as f:
             self.applines = f.readlines()
 
         self.ap2lines=""
-        with open("sample.ap2.log","r") as f:
+        with open("../crap/samples/sample.ap2.log","r") as f:
             self.ap2lines= f.readlines()
 
     #@mock.patch('parsmap.conversors.convert_time') # no module conversors
@@ -121,7 +121,7 @@ from parsmap import apache_log
 class test_apache_log(BaseTest):
     def setUp(self):
         self.apachelines = ""
-        with open("sample.apache.log","r") as f:
+        with open("../crap/samples/sample.apache.log","r") as f:
             self.apachelines = f.readlines()
 
     def test_empty_lines_list(self):
@@ -271,3 +271,50 @@ class test_list_fields(BaseTest):
         d = {"kind":{"column_names":"foo"}}
         res = list_fields(d)
         eq_(type(""),type(res))
+
+
+################################################################################
+from  parsmap import consumer
+
+class test_consumer_decorator(BaseTest):
+    def test_it_runs_the_lines(self):
+        """just run the lines for coverage"""
+        mymock = mock.MagicMock(lambda x : x)
+        decorator = consumer(mymock)
+        decorated = decorator("mymock2")
+        eq_(mymock.called, True)
+
+from parsmap import broadcast
+
+class test_broadcast(BaseTest):
+    def test_for_coverage(self):
+        """just runs the lines"""
+        mymock = mock.MagicMock(lambda x : x )
+        @consumer(mymock)
+        def consumed(x):
+            return x
+        source = "foo\nbar\nbaz"
+        broadcast(source,[consumed])
+        eq_(mymock.called, True)
+
+
+################################################################################
+from parsmap import matchit
+import re
+
+class test_matchit(BaseTest):
+    def setUp(self):
+        self.ptn = re.compile(".* - (.*).*")
+
+    def test_none_input(self):
+        matchit(None,None,None)
+
+    def test_wrong_compiled_pattern(self):
+        matchit(None,"line",{"field":""})
+
+    def test_wrong_mapping_field(self):
+        matchit(self.ptn,"foo - bar baz","crap")
+
+    def test_(self):
+        pass
+
