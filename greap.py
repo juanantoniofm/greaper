@@ -50,17 +50,20 @@ def read_in_lines(fh = None):
     """read a file line by line
     In a lazy way
     """
-    while True:
-        line = fh.readline()
-        if not line:
-            break
-        else:
-            if not grepit(line, args["grep_regex"], args["ngrep_regex"]):
-                # check that the line matches with the pre-regex and if not, break
-                yield ""
+    try:
+        while True:
+            line = fh.readline()
+            if not line:
+                break
             else:
-                #output("readinlines {0}".format(line), "DEBUG") # print debug info
-                yield line
+                if not grepit(line, args["grep_regex"], args["ngrep_regex"]):
+                    # check that the line matches with the pre-regex and if not, break
+                    yield ""
+                else:
+                    #output("readinlines {0}".format(line), "DEBUG") # print debug info
+                    yield line
+    except IOError as e:
+        output("No more output needed. {0}".format(e),"DEBUG")
  
 ################################################################################
 
@@ -104,9 +107,12 @@ def compose(query, data=None):
 
 @consumer
 def query_print():
-    while True:
-        r=(yield)
-        output(compose(args["query"], r),"OUTPUT")
+    try:
+        while True:
+            r=(yield)
+            output(compose(args["query"], r),"OUTPUT")
+    except IOError as e:
+        output("No more output needed. {0}".format(e),"DEBUG")
 
 
 ################################################################################

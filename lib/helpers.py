@@ -64,7 +64,6 @@ def line_matches_greps(line, greplist=None):
     """
     assert greplist is not None
     # if the list is empty is because we are not actually searching nothing
-    print(line)
     if greplist ==  [] or line is None:
         return line
 
