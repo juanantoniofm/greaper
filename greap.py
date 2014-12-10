@@ -5,8 +5,9 @@ import argparse
 import sys
 
 from lib.parsmap import field_map, consumer, convert_time
-from lib.parsmap import mpt,list_fields,  broadcast, get_producer,producers
-from lib.helpers import output,line_matches_greps, grepit
+from lib.parsmap import mpt,list_fields, broadcast, get_producer, producers
+from mappings import mpt
+from lib.helpers import configure_logging, output, line_matches_greps, grepit
 import myfilters 
 
 command_parser = argparse.ArgumentParser(
@@ -56,7 +57,7 @@ def read_in_lines(fh = None):
             break
         else:
             if not grepit(line, args["grep_regex"], args["ngrep_regex"]):
-                # check that the line matches with the pre-regex and if not, break
+                #- check that the line matches with the pre-regex and if not, break
                 yield ""
             else:
                 #output("readinlines {0}".format(line), "DEBUG") # print debug info
@@ -84,11 +85,13 @@ def compose(query, data=None):
     :query: list of params to print from the log line parsed.
     :data:  the dictionary with the parsed line.
     :return: the line to print with the fields in the order specified in query."""
-    rl = " "
+    #TODO: change the behaviour, so compose will print the line in the same order of
+    #      the original line, when no query specified
+    rl = ""
     #- first figure out which fields to print. either all of just queried ones.
     if query is None:
         queried_fields = [x for x in data.iterkeys()]
-        output("DEFQUERY {0}".format(queried_fields.__str__()), "OUTPUT")
+        output("DEFQUERY {0}".format(queried_fields.__str__()), "DEBUG")
     else:
         queried_fields = query.split(",")
     #- then go and create the line
@@ -111,11 +114,11 @@ def query_print():
 
 ################################################################################
 
+debug_mode = False
+
 if __name__ == "__main__":
     args = vars(command_parser.parse_args()) 
-    import lib.helpers as helpers
-    import lib.parsmap as parsmap
-
+    configure_logging(args["verbose"])
     try:
         output("parameters: {0}".format(args.__str__()),"DEBUG") # show the params for debug purposes
 

@@ -1,4 +1,6 @@
 
+#-*- coding: utf-8 -*-
+
 """ Module to host some helper function, mainly related to logging and printing"""
 
 
@@ -7,12 +9,24 @@ import sys
 import logging
 
 # configure logging
-logging.basicConfig(
-        stream=sys.stderr,
-        level=logging.DEBUG,
-        format="GREAP %(levelname)s %(message)s")
-#TODO:configure it from settings and command line
+def configure_logging(debug_enabled = False):
+    if debug_enabled:
+        logger = logging.DEBUG
+    else:
+        logger = logging.INFO
 
+    logging.basicConfig(
+        stream=sys.stderr,
+        level=logger,
+        format="GREAP %(levelname)s %(message)s")
+
+
+def paint_red(msg):
+    """
+    print the message in red
+    """
+    formatter = r"|\033[0;31m\\e[7m {0} \e[0m|"
+    return formatter.format(msg)
 
 def normal_output(msg=None):
     """
@@ -20,7 +34,6 @@ def normal_output(msg=None):
     performed, results, etc. 
     Not the information related to the inner workings of the application
     """
-    #raise TypeError("when called")
     if msg == None:
         print("")
         return ""
@@ -36,7 +49,7 @@ def output(msg, loglevel="OUTPUT", deprecated_param = None):
     :loglevel: the loglevel to which the msg belongs
     :deprecated_param: just that. a deprecated param that will be removed soon from the callers
     """
-    # to imitate a switch/case behaviour, we use a hashmap:
+    #- to imitate a switch/case behaviour, we use a hashmap:
     levels = {
             "DEBUG":logging.debug,
             "WARNING": logging.warning,
@@ -44,12 +57,10 @@ def output(msg, loglevel="OUTPUT", deprecated_param = None):
             "INFO": logging.debug,
             "EXC": logging.exception,
             "OUTPUT":normal_output
-            #"OUTPUT":logging.info
             }
-    levels[loglevel](msg)
-    return "GREAP {0} {1}".format(loglevel,msg)
     try:
-        pass
+        levels[loglevel](msg)
+        return "GREAP {0} {1}".format(loglevel,msg)
     except KeyError:
         logging.error("Log level not found: {0}".format(loglevel))
         logging.error("logging: ",msg)
@@ -63,8 +74,7 @@ def line_matches_greps(line, greplist=None):
     :greplist: list of grep parameters
     """
     assert greplist is not None
-    # if the list is empty is because we are not actually searching nothing
-    print(line)
+    #- if the list is empty is because we are not actually searching nothing
     if greplist ==  [] or line is None:
         return line
 
@@ -86,7 +96,7 @@ def line_no_matches_ngreps(line, ngreplist=None):
     :ngreplist: a list with the expresions to discard
     """
     assert ngreplist is not None
-    # if the list is empty is because we are not actually searching anything
+    #- if the list is empty is because we are not actually searching anything
     if ngreplist == [] or line is None:
         return line
 
@@ -107,7 +117,6 @@ def grepit(line, regex=[], nregex = []):
     :regex: expresion to validate the line
     :nregex: expresion to discard the line
     """
-    #TODO: it can be simplified with the new line_matches_greps method
     if regex is None:
         regex = []
     if nregex is None:
@@ -121,5 +130,7 @@ def grepit(line, regex=[], nregex = []):
                 line,
                 nregex),
             regex)
+
+
 
 
