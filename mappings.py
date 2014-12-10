@@ -1,4 +1,5 @@
-from lib.conversors import convert_time,convert_xml,xml_stats,trim_token,trim_token_inventoryjobs
+from lib.conversors import convert_time,convert_xml,clean_action_to_xml
+from myfilters.channelmanager import xml_stats,trim_token,trim_token_inventoryjobs
 
 
 mpt = { # a table to define differences among log formats

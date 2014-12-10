@@ -1,8 +1,4 @@
 
-################################################################################
-#   My Filters.
-#   Though as a library of possible filters to be used weth the greap tools.
-################################################################################
 def add_entry(r=None,totalstatus=None):
     """
     adds an entry to the results dictionary. 
@@ -99,19 +95,4 @@ def get_useragent(r=None, totalstatus=None):
         # if it's not being found till now, create a new entry in stats
         totalstatus[str(r['status'])]["useragents"] = {}
         totalstatus[str(r['status'])]["useragents"][r['useragent']] = 1
-         
-
-
-################################################################################
-#   get stats of xml in a nice table
-################################################################################
-xml_stats = {"REQUEST":[],"RESPONSE":[]} 
-
-def get_xml_stats(r=None, xml_stats=xml_stats):
-    """
-    get stats like size and rtt
-    """
-    data = [] #NOTE: we can probably do this better with pandas
-    raise NotImplementedError
-
-
+     
