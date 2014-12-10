@@ -102,4 +102,16 @@ def get_useragent(r=None, totalstatus=None):
          
 
 
+################################################################################
+#   get stats of xml in a nice table
+################################################################################
+xml_stats = {"REQUEST":[],"RESPONSE":[]} 
+
+def get_xml_stats(r=None, xml_stats=xml_stats):
+    """
+    get stats like size and rtt
+    """
+    data = [] #NOTE: we can probably do this better with pandas
+    raise NotImplementedError
+
 
