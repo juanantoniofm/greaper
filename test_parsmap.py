@@ -71,6 +71,7 @@ class test_channel_manager_log(BaseTest):
         mymock.side_effect=ValueError("bazinga!")
         result = parsmap.channel_manager_log(self.applines)
         calling = [l for l in result]
+        # print "calling,",calling #noisy!
         eq_(True,mymock.called)
 
     @mock.patch('conversors.convert_xml')
@@ -98,10 +99,12 @@ class test_channel_manager_log(BaseTest):
         input_line = "bau 131312     euas uabsoeutaneusan uasoe tu asoeuta "
         assert_raises(ValueError,parsmap.channel_manager_log, input_line.split())   
 
-    @raises(ValueError)
-    def test_wtf(self):
+    #@raises(ValueError)  # is not raised anymore, it breaks nicely
+    def test_wtf_returns_empty(self):
+        """a weird line returns nothing"""
+        # TODO: in case of weird line, should we return everything or nothing?. I believe everything
         input_line = "wtf"
-        eq_([],[ f for f in  parsmap.channel_manager_log(input_line)])
+        eq_(["wtf"],[ f for f in  parsmap.channel_manager_log(input_line)])
 
     def test_sample_lines(self):
         input_lines = self.applines
@@ -113,7 +116,7 @@ class test_channel_manager_log(BaseTest):
         input_lines = self.ap2lines
         r = parsmap.channel_manager_log(input_lines)
         result = [l for l in r]
-        eq_(31,len(result))
+        eq_(len(input_lines),len(result))
 
 ################################################################################
 from parsmap import apache_log
@@ -137,7 +140,8 @@ class test_apache_log(BaseTest):
 
     def test_wrong_line(self):
         input_line = "bau asetao euas uabsoeutaneusan uasoe tu asoeuta "
-        assert_raises(ValueError,apache_log, input_line.split(" "))   
+        #assert_raises(ValueError,apache_log, input_line.split(" "))   
+        eq_(input_line,apache_log, input_line.split(" "))
 
 ################################################################################
 from parsmap import  field_map
@@ -307,6 +311,7 @@ class test_matchit(BaseTest):
         self.ptn = re.compile(".* - (.*).*")
 
     def test_none_input(self):
+        #TODO: define matchit behaviour in case of None, or crit error
         matchit(None,None,None)
 
     def test_wrong_compiled_pattern(self):

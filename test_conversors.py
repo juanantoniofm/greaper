@@ -113,22 +113,22 @@ class test_xml_stats(unittest.TestCase):
  
     def test_detect_response(self):
         """detect properly a response"""
-        expected1 = """RESPONSE size=202 chars; rtt:848;"""
-        expected2 = """RESPONSE size=202 chars; rtt:1036;"""
+        expected1 = """;RESPONSE; 202; 848"""
+        expected2 = """;RESPONSE; 202; 1036"""
         eq_(expected1,xml_stats(self.responses[0]))
         eq_(expected2,xml_stats(self.responses[1]))
  
     def test_detect_request(self):
         """detect properly a request"""
-        expected1 = """REQUEST size=464 chars;"""
-        expected2 = """REQUEST size=468 chars;"""
+        expected1 = """;REQUEST; 464"""
+        expected2 = """;REQUEST; 468"""
         eq_(expected1,xml_stats(self.requests[0]))
         eq_(expected2,xml_stats(self.requests[1]))
  
     def test_nice_xml(self):
         """ if we pass valid xml, return nice stats"""
         inputxml = """[REQUEST] [<root></root>]"""
-        expect = """REQUEST size=13 chars;"""
+        expect = """;REQUEST;13"""
         eq_(expect,xml_stats(inputxml))
  
     @nottest

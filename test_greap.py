@@ -34,4 +34,4 @@ class test_compose(unittest.TestCase):
 
     def test_returns_a_field(self):
         res = compose("a,b",self.d)
-        eq_(" 11 c ", res)
+        eq_("11 c ", res)

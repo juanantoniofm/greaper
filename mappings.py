@@ -28,7 +28,7 @@ mpt = { # a table to define differences among log formats
               r'(\w*) *\[(.*?)\] (.*?) - (.*)',
     "column_names": ('datetime','loglevel','tracing', 'jobtype','action'),
     "funcs":{"action":xml_stats,"datetime":convert_time,"tracing":trim_token_inventoryjobs},
-    "params":{"datetime":["%Y-%m-%d %H:%M:%S,%f","%Y-%m-%d %H:%M:%S,%f"],"tracing":["{timestamp}"]}
+    "params":{"datetime":["%Y-%m-%d %H:%M:%S,%f","%H:%M:%S"],"tracing":["{timestamp}"]}
     },
 
 "lh":{

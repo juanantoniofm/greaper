@@ -7,17 +7,18 @@ from mappings import mpt
 
 
 # disabled to avoid wrong coverage
-##def follow(thefile):
-##    """
-##    Follow a file like tail -f.
-##    """
-##    thefile.seek(0,2)
-##    while True:
-##        line = thefile.readline()
-##        if not line:
-##            time.sleep(0.1)
-##            continue
-##        yield line
+def follow(thefile):
+    """
+    Follow a file like tail -f.
+    """
+    thefile.seek(0,2)
+    output("reached the end of the file","DEBUG")
+    while True:
+        line = thefile.readline()
+        if not line:
+            time.sleep(0.1)
+            continue
+        yield line
 
 
 def consumer(func):
@@ -76,7 +77,8 @@ def matchit(regob, line, validation_fields = None):
             output("line: {0}".format(line), "DEBUG")
             output("validation: {0}".format(len(validation_fields)), "DEBUG")
             output("matches: {0}".format(type(matched)), "DEBUG")
-            raise ValueError("regex not matching properly, {0}".format(e))
+            #raise ValueError("regex not matching properly, {0}".format(e))
+            output("regex not matching properly, {0}".format(e), "DEBUG")
 
     return matched
 

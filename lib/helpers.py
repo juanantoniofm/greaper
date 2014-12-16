@@ -41,7 +41,7 @@ def normal_output(msg=None):
     return(msg)
 
 
-def output(msg, loglevel="OUTPUT", deprecated_param = None):
+def output(msg=None, loglevel="OUTPUT", deprecated_param = None):
     """
     New output function. 
     It uses the logging module to control everything
@@ -49,8 +49,10 @@ def output(msg, loglevel="OUTPUT", deprecated_param = None):
     :loglevel: the loglevel to which the msg belongs
     :deprecated_param: just that. a deprecated param that will be removed soon from the callers
     """
+    if msg is None:
+        return None
     #- to imitate a switch/case behaviour, we use a hashmap:
-    levels = {
+    log_at = {
             "DEBUG":logging.debug,
             "WARNING": logging.warning,
             "ERROR": logging.error,
@@ -59,7 +61,7 @@ def output(msg, loglevel="OUTPUT", deprecated_param = None):
             "OUTPUT":normal_output
             }
     try:
-        levels[loglevel](msg)
+        log_at[loglevel](msg)
         return "GREAP {0} {1}".format(loglevel,msg)
     except KeyError:
         logging.error("Log level not found: {0}".format(loglevel))
