@@ -18,15 +18,12 @@ so far, everything is built in.
 
 # Bugs, Improvements, etc
 
+- be able to specify a `-f,--follow` param to behave like `tail -f`
 - use proper regex in the grepit prefilter, instead of plain string matching
 - being able to cat/tail logs into the script.
-- be able to specify a `-f,--follow` param to behave like `tail -f`
 - multiple input files specified in the command line (that will trigger multiple producers, and follow some order)
-- if no query values are specified, but there is a -q flag, show the available fields
 - for cm sync logs, take the "Enqueue sync request <tokens>" and use a consumer to detect it, and print aditional tracking info for it.
 - be able to specify a format string instead of a simple list of fields
-- include more than one -g or -ng in the same command line
-	- right now, we can already do it, but is in "OR" mode, not in "AND"
 
 
 ## Proposed use cases:
@@ -44,6 +41,8 @@ We can create filters in python, with more advanced features, like sum, average,
 
 	greap -i file.log --filter sum(r["bytes"]) 
 
+UPDATE: we have decided to use filters as bundles, so they can be stored and added to the `myfilters` folder, and then used as a group, instead of modifying them from the command line. This way, each user can have custom made filters, than can then be shared, or commited to the main repo if interesting.
+
 ### specify input file
 
 	greap --input filename.log
@@ -58,6 +57,7 @@ being able to filter the lines we want to process, before actually parse the lin
 
 	greap -g <expresion>  -i file.log
 
+It behaves like an AND operator, so if you chain -g, it will only use the lines that match with ALL the -g expressions, like the behaviour that you get when you chain greps in the command line with a pipe
 
 ### negative grep-ping
 
@@ -67,6 +67,7 @@ being able to filter the things we DON'T want to process, before actually parse 
 
 	greap -ng <expresion>  -i file.log
 
+Chaining: when you specify more than one -ng parameter, it behaves like an OR, so it will not use the lines that match ANY of the -ng expressions
 
 ### Verbose
 
