@@ -19,8 +19,8 @@ mpt = { # a table to define differences among log formats
               r'(\w*) *\[(.*?)\] (.*?) - (.*)',
     "column_names": ('logdate','machine','logfile','datetime','loglevel','tracing',
                       'jobtype','action'),
-    "funcs":{},
-    "params":{}
+    "funcs":{"datetime":convert_time, "logdate":convert_time, "action":convert_xml },
+    "params": {"datetime":["%Y-%m-%d %H:%M:%S,%f"], "logdate":["%b %d %H:%M:%S"], "action":[] }
     },
 
 "cm_appserver":{

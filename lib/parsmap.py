@@ -6,21 +6,6 @@ from helpers import output
 from mappings import mpt
 
 
-# disabled to avoid wrong coverage
-def follow(thefile):
-    """
-    Follow a file like tail -f.
-    """
-    thefile.seek(0,2)
-    output("reached the end of the file","DEBUG")
-    while True:
-        line = thefile.readline()
-        if not line:
-            time.sleep(0.1)
-            continue
-        yield line
-
-
 def consumer(func):
     """consumer decorator and co-routine """
     def start(*args,**kwargs):
@@ -69,6 +54,8 @@ def matchit(regob, line, validation_fields = None):
     matched =  regob.match(line)
     if validation_fields is not None:
         try:
+            if type(validation_fields) is type(""):
+                raise ValueError("No validation fields provided for matchit")
             if len(matched.groups()) is not len(validation_fields):
                 raise ValueError("number of regex matches not valid")
         except (ValueError,AttributeError),e :
@@ -158,22 +145,11 @@ def new_channel_manager_log(lines):
     The idea behing this is being able to remove it in the near future
     """
     kind = "channel_manager"
-    app_func = {"datetime":convert_time,
-                    "logdate":convert_time,
-                    "action":convert_xml
-                    }
-    #- params have to be lists, so it can be properly referenced inside
-    app_params = {"datetime":["%Y-%m-%d %H:%M:%S,%f"],
-                    "logdate":["%b %d %H:%M:%S"],
-                    "action":[]
-                    }
     processed =  generic_log( lines,
                         mpt[kind]["regex"],
                         mpt[kind]["column_names"],
-# this are the final lists we should be calling. this is just a test. TODO: finish it
-#                          mpt[kind]["funcs"],
-#                          mpt[kind]["params"]
-                        app_func, app_params
+                        mpt[kind]["funcs"],
+                        mpt[kind]["params"]
                       )
     return processed
 

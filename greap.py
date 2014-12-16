@@ -8,8 +8,9 @@ A tool to ease the burden of navigating an querying your logs
 
 import argparse
 import sys
+from time import sleep
 
-from lib.parsmap import consumer, follow
+from lib.parsmap import consumer
 from lib.parsmap import list_fields, broadcast, get_producer, producers
 #from lib.parsmap import field_map, convert_time  # by now unused. kept as reference
 #from mappings import mpt  # by now unused. kept as reference
@@ -47,6 +48,10 @@ command_parser.add_argument("-q", "--query", dest="query",
             list_fields()),
         required=False)
 
+command_parser.add_argument("-ff", "--follow", action="store_true",
+        help="Follow, like `tail -f` or F inside less",
+        required=False, default=False)
+
 command_parser.add_argument("-f", "--filter", dest="filters",
         help="use custom built filters (available: {0})".format(
                 ", ".join([f for f in dir(myfilters) if not f.startswith("__")])),
@@ -70,15 +75,53 @@ command_parser.add_argument("-ng", "--ngrep", dest="ngrep_regex",
 
 ################################################################################
 
+#### # we dont need the follow if we put all of it in readinlines
+####def follow(thefile):
+####    """
+####    Follow a file like tail -f.
+####    """
+####    thefile.seek(0,2)
+####    output("reached the end of the file","DEBUG")
+####    while True:
+####        line = thefile.readline()
+####        if not line:
+####            time.sleep(0.1)
+####            continue
+####        else:
+####            if not grepit(line, args["grep_regex"], args["ngrep_regex"]):
+####                #- check that the line matches with the pre-regex and if not, break
+####                yield ""
+####            else:
+####                #output("readinlines {0}".format(line), "DEBUG") # print debug info
+####                yield line
 
-def read_in_lines(fh=None):
+
+def read_in_lines(fh=None, follow=False):
     """read a file line by line
     In a lazy way
     """
+    if follow:
+        #- we go to the end of the file first
+        fh.seek(0,2) # it will work unless the 1st param is x>fh.tell() 
+        #- and then go back a bit but never more that tell()
+        backsteps = 100  # value to go back once in the EOF
+        end = fh.tell()
+        if backsteps < end:
+            fh.seek(backsteps,2)
+        else:
+            #- if backsteps are higher, just go back to the beggining, as is a tiny file
+            fh.seek(0,0)
+        print "WTDF"
+        output("reached the end of file", "INFO")
+
     while True:
         line = fh.readline()
         if not line:
-            break
+            if follow:
+                sleep(0.1)
+                continue
+            else:
+                break
         else:
             if not grepit(line, args["grep_regex"], args["ngrep_regex"]):
                 #- check that the line matches with the pre-regex and if not, break
@@ -158,7 +201,7 @@ if __name__ == "__main__":
         #- show the params for debug purposes
         output("parameters: {0}".format(args.__str__()), "DEBUG")
 
-        lines = read_in_lines(open(args["input_file"], "r"))
+        lines = read_in_lines(open(args["input_file"], "r"), args["follow"])
 
         producer = get_producer(args["log_format"])
         log = producer(lines)

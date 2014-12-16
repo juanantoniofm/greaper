@@ -56,7 +56,7 @@ def output(msg=None, loglevel="OUTPUT", deprecated_param = None):
             "DEBUG":logging.debug,
             "WARNING": logging.warning,
             "ERROR": logging.error,
-            "INFO": logging.debug,
+            "INFO": logging.info,
             "EXC": logging.exception,
             "OUTPUT":normal_output
             }

@@ -66,6 +66,7 @@ class test_channel_manager_log(BaseTest):
             self.ap2lines= f.readlines()
 
     #@mock.patch('parsmap.conversors.convert_time') # no module conversors
+    @nottest
     @mock.patch('conversors.convert_time')
     def test_convert_time_error(self,mymock):
         mymock.side_effect=ValueError("bazinga!")
@@ -97,14 +98,14 @@ class test_channel_manager_log(BaseTest):
 
     def test_wrong_line(self):
         input_line = "bau 131312     euas uabsoeutaneusan uasoe tu asoeuta "
+        eq_("foo",parsmap.channel_manager_log(input_line.split()))
         assert_raises(ValueError,parsmap.channel_manager_log, input_line.split())   
 
     #@raises(ValueError)  # is not raised anymore, it breaks nicely
     def test_wtf_returns_empty(self):
         """a weird line returns nothing"""
-        # TODO: in case of weird line, should we return everything or nothing?. I believe everything
         input_line = "wtf"
-        eq_(["wtf"],[ f for f in  parsmap.channel_manager_log(input_line)])
+        eq_([],[ f for f in  parsmap.channel_manager_log(input_line)])
 
     def test_sample_lines(self):
         input_lines = self.applines
@@ -138,10 +139,12 @@ class test_apache_log(BaseTest):
         result = apache_log(input_lines)
         eq_([], [x for x in result])
 
+    @nottest
     def test_wrong_line(self):
+        """TODO: define this behaviour"""
         input_line = "bau asetao euas uabsoeutaneusan uasoe tu asoeuta "
         #assert_raises(ValueError,apache_log, input_line.split(" "))   
-        eq_(input_line,apache_log, input_line.split(" "))
+        eq_([input_line], apache_log(input_line.split(" ")))
 
 ################################################################################
 from parsmap import  field_map
@@ -280,6 +283,7 @@ class test_list_fields(BaseTest):
 ################################################################################
 from  parsmap import consumer
 
+
 class test_consumer_decorator(BaseTest):
     def test_it_runs_the_lines(self):
         """just run the lines for coverage"""
@@ -288,7 +292,9 @@ class test_consumer_decorator(BaseTest):
         decorated = decorator("mymock2")
         eq_(mymock.called, True)
 
+################################################################################
 from parsmap import broadcast
+
 
 class test_broadcast(BaseTest):
     def test_for_coverage(self):
@@ -306,20 +312,19 @@ class test_broadcast(BaseTest):
 from parsmap import matchit
 import re
 
+
 class test_matchit(BaseTest):
     def setUp(self):
         self.ptn = re.compile(".* - (.*).*")
 
     def test_none_input(self):
-        #TODO: define matchit behaviour in case of None, or crit error
-        matchit(None,None,None)
+        "no input returns none"
+        eq_(None,matchit(None,None,None))
 
     def test_wrong_compiled_pattern(self):
-        matchit(None,"line",{"field":""})
+        eq_(None,matchit(None,"line",{"field":""}))
 
+    #@raises(ValueError)  # but it actually doesn't raise, but prints the exc. output
     def test_wrong_mapping_field(self):
-        matchit(self.ptn,"foo - bar baz","crap")
-
-    def test_(self):
-        pass
-
+        #TODO: capture output to validate the test
+        eq_(None,matchit(self.ptn,"foo - bar baz","crap"))
