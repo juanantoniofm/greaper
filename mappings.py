@@ -1,5 +1,6 @@
 from lib.conversors import convert_time,convert_xml,clean_action_to_xml
-from myfilters.channelmanager import xml_stats,trim_token,trim_token_inventoryjobs
+#from myfilters.channelmanager import xml_stats,trim_token,trim_token_inventoryjobs
+from lib.conversors import xml_stats,trim_token,trim_token_inventoryjobs
 
 
 mpt = { # a table to define differences among log formats
@@ -22,6 +23,18 @@ mpt = { # a table to define differences among log formats
     "funcs":{"datetime":convert_time, "logdate":convert_time, "action":convert_xml },
     "params": {"datetime":["%Y-%m-%d %H:%M:%S,%f"], "logdate":["%b %d %H:%M:%S"], "action":[] }
     },
+
+"temporary":{
+    "regex": r'(\w{3} {0,2}\d{1,2} \d{2}:\d{2}:\d{2}) ' \
+              r'(app\w{4}\d{2}) ([a-z0-9\-]*): ' \
+              r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) ' \
+              r'(\w*) *\[(.*?)\] (.*?) - (.*)',
+    "column_names": ('logdate','machine','logfile','datetime','loglevel','tracing',
+                      'jobtype','action'),
+    "funcs":{"action":xml_stats,"datetime":convert_time,"tracing":trim_token_inventoryjobs},
+    "params":{"datetime":["%Y-%m-%d %H:%M:%S,%f","%H:%M:%S"],"tracing":["{timestamp}"]}
+    },
+
 
 "cm_appserver":{
     "regex": r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) ' \

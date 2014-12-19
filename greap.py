@@ -11,9 +11,9 @@ import sys
 from time import sleep
 
 from lib.parsmap import consumer
-from lib.parsmap import list_fields, broadcast, get_producer, producers
+from lib.parsmap import list_fields, broadcast, get_producer
 #from lib.parsmap import field_map, convert_time  # by now unused. kept as reference
-#from mappings import mpt  # by now unused. kept as reference
+from mappings import mpt  
 from lib.helpers import configure_logging, output, grepit
 #from lib.helpers import line_matches_greps  # by now unused. kept as reference
 import myfilters
@@ -62,7 +62,7 @@ command_parser.add_argument("-i", "--input", dest="input_file",
 
 command_parser.add_argument("-k", "--kind", dest="log_format",
         help="Define which kind of log to parse (available: {0})".format(
-            ", ".join(producers.iterkeys())),
+            ", ".join(mpt.iterkeys())),
         required=False)
 
 command_parser.add_argument("-g", "--grep", dest="grep_regex", default=[], action='append',
@@ -204,7 +204,7 @@ if __name__ == "__main__":
         lines = read_in_lines(open(args["input_file"], "r"), args["follow"])
 
         producer = get_producer(args["log_format"])
-        log = producer(lines)
+        log = producer(lines, args["log_format"])
 
         broadcast(log, [query_print()])
 

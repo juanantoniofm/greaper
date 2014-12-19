@@ -6,6 +6,11 @@
     
 
 ################################################################################
+import xml.dom.minidom as mdom
+import xml.dom.expatbuilder as expatbuilder
+
+from helpers import output
+
 def xml_stats(content=None, root="root"):
     """
     extract stats from an xml request/response

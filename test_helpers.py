@@ -203,3 +203,22 @@ class test_grepit(unittest.TestCase):
         """ t """
         eq_(None,grepit("",))
 
+
+
+################################################################################
+
+class test_matchit(BaseTest):
+    def setUp(self):
+        self.ptn = re.compile(".* - (.*).*")
+
+    def test_none_input(self):
+        "no input returns none"
+        eq_(None,matchit(None,None,None))
+
+    def test_wrong_compiled_pattern(self):
+        eq_(None,matchit(None,"line",{"field":""}))
+
+    #@raises(ValueError)  # but it actually doesn't raise, but prints the exc. output
+    def test_wrong_mapping_field(self):
+        #TODO: capture output to validate the test
+        eq_(None,matchit(self.ptn,"foo - bar baz","crap"))

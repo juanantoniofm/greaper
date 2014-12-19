@@ -135,4 +135,29 @@ def grepit(line, regex=[], nregex = []):
 
 
 
+def matchit(regob, line, validation_fields = None):
+    """
+    match and validate the matching of a line against a regex object
+    :regob: regex pattern compiled
+    :line:  just a line
+    """
+    matched =  regob.match(line)
+    if validation_fields is not None:
+        try:
+            if type(validation_fields) is type(""):
+                raise ValueError("No validation fields provided for matchit")
+            if len(matched.groups()) is not len(validation_fields):
+                raise ValueError("number of regex matches not valid")
+        except (ValueError,AttributeError),e :
+            output("regob: {0}".format(type(regob)), "DEBUG")
+            output("pattern: {0}".format(regob.pattern), "DEBUG")
+            output("line: {0}".format(line), "DEBUG")
+            output("validation: {0}".format(len(validation_fields)), "DEBUG")
+            output("matches: {0}".format(type(matched)), "DEBUG")
+            #raise ValueError("regex not matching properly, {0}".format(e))
+            output("regex not matching properly, {0}".format(e), "DEBUG")
+
+    return matched
+
+
 
