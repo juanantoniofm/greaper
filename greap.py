@@ -39,7 +39,7 @@ command_parser.add_argument("-k","--kind", dest="log_format",
 command_parser.add_argument("-g","--grep", dest="grep_regex", default=[],action='append',
         help="Use the expresion t filter the input", required=False)
 
-command_parser.add_argument("-ng","--ngrep", dest="ngrep_regex",
+command_parser.add_argument("-ng","--ngrep", dest="ngrep_regex", default=[], action='append',
         help="negative grep. Filter the lines that NOT match the expresion (like grep -v regex)", required=False)
 
 
