@@ -105,7 +105,7 @@ def trim_token(content=None, trim=40):
     return content[trim:]
 
 
-def trim_token_inventoryjobs(content=None, template = "\thotel {hotelier} member {membership}"):
+def trim_token_inventoryjobs(content=None, template = "\thotel {hotelier};\tmember {membership};"):
     """
     trim the trace token however we want. Example:
     integration-juniper-DES-inventoryJob-1: traceToken=vk4Ox7ctD5QA stamp=1417695841922,hotelier=9070,membership=79734

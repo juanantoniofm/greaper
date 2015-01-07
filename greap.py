@@ -63,7 +63,7 @@ command_parser.add_argument("-i", "--input", dest="input_file",
 command_parser.add_argument("-k", "--kind", dest="log_format",
         help="Define which kind of log to parse (available: {0})".format(
             ", ".join(mpt.iterkeys())),
-        required=False)
+        required=True)
 
 command_parser.add_argument("-g", "--grep", dest="grep_regex", default=[], action='append',
         help="Use the expresion t filter the input", required=False)
@@ -154,7 +154,7 @@ def plain_print():
         print r
 
 
-def compose(query, data=None):
+def compose(query, data=None, separator = ""):
     """
     compose the resulting line of the query ready for output.
     :query: list of params to print from the log line parsed.
@@ -175,7 +175,7 @@ def compose(query, data=None):
         output("Nothing passed to compose", "DEBUG")
         return ""
     for f in queried_fields:
-        resul_line += data[f].__str__() + " "
+        resul_line += data[f].__str__() + separator
     return resul_line
 
 
@@ -213,6 +213,9 @@ if __name__ == "__main__":
         output(e, "EXC")
         sys.exit(1)
 
+    except IOError as e:
+        # the pipe is broken, so don't complain at all
+        pass # on purpose
     except Exception as e:
         # pokemon exception
         output(e, "EXC")
