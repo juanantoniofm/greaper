@@ -89,3 +89,12 @@ the current logic is pretty simple, based on the name of the input file, or fall
 	greap -i file.log -k channel
 
 
+### Separator field
+
+We can modify the string used to concatenate the fields in the final output. 
+
+This will be useful in case we are using special filters or conversors, if we want to dump the output to a CSV, or even display tables.
+
+  greap -i file -s "\t"
+
+
