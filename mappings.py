@@ -43,8 +43,8 @@ lh={
 temporary={
     "regex": channel_manager["regex"],
     "column_names": channel_manager["column_names"],
-    "funcs":{"datetime":convert_time,"tracing":trim_token_inventoryjobs,"action":get_hotel_and_room_name},
-    "params":{"datetime":["%Y-%m-%d %H:%M:%S,%f","%H:%M:%S"],"tracing":["{membership}"], "action":["\t{roomname}"]}
+    "funcs":{"datetime":convert_time,"tracing":trim_token_inventoryjobs},
+    "params":{"datetime":["%Y-%m-%d %H:%M:%S,%f","%H:%M:%S"],"tracing":["{membership} {hotelier}"] }
     }
 
 

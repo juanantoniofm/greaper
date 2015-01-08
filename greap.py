@@ -60,16 +60,20 @@ command_parser.add_argument("-f", "--filter", dest="filters",
 command_parser.add_argument("-i", "--input", dest="input_file",
         help="Filename to read input from", required=True)
 
-command_parser.add_argument("-k", "--kind", dest="log_format",
+command_parser.add_argument("-k", "--kind", dest="log_format", default="channel_manager",
         help="Define which kind of log to parse (available: {0})".format(
             ", ".join(mpt.iterkeys())),
-        required=True)
+        required=False)
 
 command_parser.add_argument("-g", "--grep", dest="grep_regex", default=[], action='append',
         help="Use the expresion t filter the input", required=False)
 
-command_parser.add_argument("-ng", "--ngrep", dest="ngrep_regex",
+command_parser.add_argument("-ng", "--ngrep", dest="ngrep_regex", default=[],action='append',
         help="negative grep. Filter the lines that NOT match the expresion (like grep -v regex)",
+        required=False)
+
+command_parser.add_argument("-s", "--separator", dest="separator", default=" ",
+        help="Define which string will be the separating the fields in the output. default to a whitespace",
         required=False)
 
 
@@ -154,7 +158,7 @@ def plain_print():
         print r
 
 
-def compose(query, data=None, separator = ""):
+def compose(query, data=None, separator = " "):
     """
     compose the resulting line of the query ready for output.
     :query: list of params to print from the log line parsed.
@@ -175,7 +179,7 @@ def compose(query, data=None, separator = ""):
         output("Nothing passed to compose", "DEBUG")
         return ""
     for f in queried_fields:
-        resul_line += data[f].__str__() + separator
+        resul_line += data[f].__str__() + separator.decode('string_escape')
     return resul_line
 
 
@@ -186,7 +190,7 @@ def query_print():
     """
     while True:
         r = (yield)
-        output(compose(args["query"], r), "OUTPUT")
+        output(compose(args["query"], r, args["separator"]), "OUTPUT")
 
 
 ################################################################################

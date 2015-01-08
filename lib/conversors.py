@@ -109,10 +109,11 @@ def trim_token_inventoryjobs(content=None, template = "\thotel {hotelier};\tmemb
     """
     trim the trace token however we want. Example:
     integration-juniper-DES-inventoryJob-1: traceToken=vk4Ox7ctD5QA stamp=1417695841922,hotelier=9070,membership=79734
+    integration-ctrip-inventoryJob-3: traceToken=IZ0Ei8qZzGIN timestamp=1420686240458,hotelier=5603,membership=85056
     so, to trim the beggining, is column 41; trimming until the = is column52
     """
     try:
-        pattern = ".*traceToken=(\S+) timestamp=(\d+),hotelier=(\d+),membership=(\d+)"
+        pattern = ".*traceToken=(\S+).*stamp=(\d+),hotelier=(\d+),membership=(\d+).*"
         reg =re.compile(pattern)
         groups = reg.match(content).groups()
         output("regex result: {0}".format([ x for x in groups]), "DEBUG")
