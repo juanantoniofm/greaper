@@ -1,7 +1,7 @@
 from lib.conversors import convert_time,convert_xml,clean_action_to_xml
-#from myfilters.channelmanager import xml_stats,trim_token,trim_token_inventoryjobs
 from lib.conversors import xml_stats,trim_token,trim_token_inventoryjobs
-from myfilters.hbd import categorize_errors, get_hotel_and_room_name
+#from myfilters.hbd import categorize_errors, get_hotel_and_room_name
+import  myfilters 
 
 
 apache= {
