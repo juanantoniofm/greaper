@@ -1,5 +1,5 @@
 from lib.conversors import convert_time,convert_xml,clean_action_to_xml
-from lib.conversors import xml_stats,trim_token,trim_token_inventoryjobs
+from lib.conversors import xml_stats,trim_token,trim_token_inventoryjobs, xml_error_text
 #from myfilters.hbd import categorize_errors, get_hotel_and_room_name
 import  myfilters 
 
@@ -43,8 +43,8 @@ lh={
 temporary={
     "regex": channel_manager["regex"],
     "column_names": channel_manager["column_names"],
-    "funcs":{"datetime":convert_time,"tracing":trim_token_inventoryjobs},
-    "params":{"datetime":["%Y-%m-%d %H:%M:%S,%f","%H:%M:%S"],"tracing":["{membership} {hotelier}"] }
+    "funcs":{"datetime":convert_time,"tracing":trim_token_inventoryjobs, "action":xml_error_text},
+    "params":{"datetime":["%Y-%m-%d %H:%M:%S,%f","%H:%M"],"tracing":["{membership} {hotelier}"] }
     }
 
 

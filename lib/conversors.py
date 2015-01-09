@@ -62,6 +62,18 @@ def beautify_xml(content, root="root"):
     return xml.toprettyxml()
 
 
+def xml_error_text(content = None, separator = "\t"):
+    """
+    return only the error code in the xml
+    """
+    errors = []
+    nodes = content.split("<")
+    for node in nodes:
+        if "Error" in node or "error" in node:
+            errors.append("<"+node)
+    return separator.join(errors)
+
+
 def xml_stats(content=None, root="root"):
     """
     extract stats from an xml request/response

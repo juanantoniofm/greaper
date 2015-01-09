@@ -219,7 +219,10 @@ if __name__ == "__main__":
 
     except IOError as e:
         # the pipe is broken, so don't complain at all
-        pass # on purpose
+        if "No such file" in e.__str__():
+            output(e,"ERROR")
+        else:
+            pass # on purpose
     except Exception as e:
         # pokemon exception
         output(e, "EXC")
