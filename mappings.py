@@ -44,7 +44,7 @@ temporary={
     "regex": channel_manager["regex"],
     "column_names": channel_manager["column_names"],
     "funcs":{"datetime":convert_time,"tracing":trim_token_inventoryjobs, "action":xml_error_text},
-    "params":{"datetime":["%Y-%m-%d %H:%M:%S,%f","%H:%M"],"tracing":["{membership} {hotelier}"] }
+    "params":{"datetime":["%Y-%m-%d %H:%M:%S,%f","%H:%M"],"tracing":["{membership};{hotelier}"] }
     }
 
 
