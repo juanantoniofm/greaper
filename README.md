@@ -61,7 +61,7 @@ being able to filter the lines we want to process, before actually parse the lin
 
 ### negative grep-ping
 
-being able to filter the things we DON'T want to process, before actually parse the line.
+being able to filter the things we DON'T want to process, before actually processing the line, saving effort.
 
 	greap --ngrep <expresion>  -i file.log
 
@@ -70,8 +70,8 @@ being able to filter the things we DON'T want to process, before actually parse 
 
 ### Verbose
 
-so far there are only 2 modes, normal, y verbose. 
-Verbose shows debug output, thats it.
+so far there are only 2 modes, normal, and verbose. 
+Verbose shows debug output about greap itself. Use it when extending greap.
 
 The output of the app is preceded always by a special prefix:
 	
