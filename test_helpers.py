@@ -57,7 +57,7 @@ class test_output(BaseTest):
         eq_(self.msg, output(self.msg))
  
     @mock.patch("helpers.enabled_level")
-    def test_exceptions(self,mymock):
+    def test_exceptions_on_the_mock(self,mymock):
         """we log exceptions as trace"""
         mymock.side_effect = Exception("kabooom!")
         res = output("msg", "ERROR")
@@ -65,7 +65,7 @@ class test_output(BaseTest):
         eq_(True,mymock.called)
             
 
-    def test_exceptions(self):
+    def test_exceptions_on_the_test(self):
         """we log exceptions as trace"""
         try:
             raise Exception("faki faki faki")
