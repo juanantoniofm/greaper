@@ -132,7 +132,7 @@ class test_xml_stats(unittest.TestCase):
         eq_(expect,xml_stats(inputxml))
  
     @nottest
-    def test_dont_die_for_bad_xml(self):
+    def test_template(self):
         """ if we pass valid xml, return it nicely formatted"""
         eq_("",xml_stats(""))
 
