@@ -63,7 +63,7 @@ def output(msg, loglevel="OUTPUT", deprecated_param = None):
         return "GREAP {0} {1}".format(loglevel,msg)
     except KeyError:
         logging.error("Log level not found: {0}".format(loglevel))
-        logging.error("logging: ",msg)
+        logging.error("logging: {0}".format(msg))
 
 ################################################################################
 
